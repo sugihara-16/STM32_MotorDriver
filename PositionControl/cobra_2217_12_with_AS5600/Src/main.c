@@ -23,7 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "sensors/encoder/mag_encoder.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -37,7 +37,6 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#include "sensors/encoder/mag_encoder.h"
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -65,9 +64,9 @@ UART_HandleTypeDef huart2;
 
 osThreadId mediumFrequencyHandle;
 osThreadId safetyHandle;
+osThreadId exSensorTaskHandle;
 /* USER CODE BEGIN PV */
 MagEncoder mag_encoder_;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -92,6 +91,8 @@ static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
 void startMediumFrequencyTask(void const * argument);
 extern void StartSafetyTask(void const * argument);
+void exSensorTaskCallback(void const * argument);
+
 static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
 #ifdef __cplusplus
@@ -179,6 +180,10 @@ int main(void)
   /* definition and creation of safety */
   osThreadDef(safety, StartSafetyTask, osPriorityAboveNormal, 0, 128);
   safetyHandle = osThreadCreate(osThread(safety), NULL);
+
+  /* definition and creation of exSensorTask */
+  osThreadDef(exSensorTask, exSensorTaskCallback, osPriorityHigh, 0, 128);
+  exSensorTaskHandle = osThreadCreate(osThread(exSensorTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -640,7 +645,7 @@ static void MX_I2C1_Init(void)
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.Timing = 0x10802D9B;
+  hi2c1.Init.Timing = 0x4052060F;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -664,6 +669,9 @@ static void MX_I2C1_Init(void)
   {
     Error_Handler();
   }
+  /** I2C Fast mode Plus enable
+  */
+  __HAL_SYSCFG_FASTMODEPLUS_ENABLE(I2C_FASTMODEPLUS_I2C1);
   /* USER CODE BEGIN I2C1_Init 2 */
 
   /* USER CODE END I2C1_Init 2 */
@@ -1026,6 +1034,25 @@ __weak void startMediumFrequencyTask(void const * argument)
     osDelay(1);
   }
   /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_exSensorTaskCallback */
+/**
+* @brief Function implementing the exSensorTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_exSensorTaskCallback */
+__weak void exSensorTaskCallback(void const * argument)
+{
+  /* USER CODE BEGIN exSensorTaskCallback */
+  /* Infinite loop */
+  for(;;)
+  {
+    mag_encoder_.update();
+    osDelay(1);
+  }
+  /* USER CODE END exSensorTaskCallback */
 }
 
 /**
