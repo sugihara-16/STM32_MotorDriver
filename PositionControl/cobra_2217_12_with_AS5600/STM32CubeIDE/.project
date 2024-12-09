@@ -37,6 +37,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/cobra_2217_12_with_AS5600.ioc</locationURI>
 		</link>
 		<link>
+			<name>Application/MyLib</name>
+			<type>2</type>
+			<location>C:/Users/junichiro/STM32_MotorDriver/PositionControl/cobra_2217_12_with_AS5600/MyLib</location>
+		</link>
+		<link>
 			<name>Application/User/app_freertos.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Src/app_freertos.c</locationURI>
@@ -45,6 +50,11 @@
 			<name>Application/User/main.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Src/main.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/main.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Src/main.cpp</locationURI>
 		</link>
 		<link>
 			<name>Application/User/mc_api.c</name>
