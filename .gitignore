@@ -12,3 +12,5 @@ language.settings.xml
 \#*\#
 *.\#*\#
 *.settings
+'*
+*Debug.launch*

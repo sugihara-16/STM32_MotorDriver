@@ -17,7 +17,7 @@ public:
   MagEncoder(){};
   ~MagEncoder(){};
   
-  static const uint8_t AS5600_I2C_ADDRESS =  0x6c; // 0x36 << 1; NOTE: STM: i2c_address << 1 !!!
+  static const uint8_t AS5600_I2C_ADDRESS =  0x36 << 1; // 0x36 << 1; NOTE: STM: i2c_address << 1 !!!
   static const uint8_t AS5600_REG_RAW_ANGLE =  0x0C;
   static const uint8_t UPDATE_INTERVAL = 20; //20 -> 50Hz
 
@@ -29,6 +29,8 @@ private:
 
   uint16_t raw_encoder_value_;
   uint32_t last_time_;
+
+  uint32_t i2c_error_code_;
 
 };
 

@@ -37,6 +37,7 @@ void MagEncoder::update(void)
       else
         {
           raw_encoder_value_ = 65535;
+          i2c_error_code_ = HAL_I2C_GetError(hi2c_);
         }
     }
 
