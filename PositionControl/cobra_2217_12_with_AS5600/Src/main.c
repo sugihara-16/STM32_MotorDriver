@@ -37,7 +37,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#include "sensors/encoder/mag_encoder.h"
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -66,7 +66,11 @@ UART_HandleTypeDef huart2;
 osThreadId mediumFrequencyHandle;
 osThreadId safetyHandle;
 /* USER CODE BEGIN PV */
+MagEncoder mag_encoder_;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -88,10 +92,11 @@ static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
 void startMediumFrequencyTask(void const * argument);
 extern void StartSafetyTask(void const * argument);
-
 static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
-
+#ifdef __cplusplus
+}
+#endif
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -146,6 +151,7 @@ int main(void)
   /* Initialize interrupts */
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
+  mag_encoder_.init(&hi2c1);
 
   /* USER CODE END 2 */
 
