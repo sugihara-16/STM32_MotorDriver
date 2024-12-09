@@ -111,7 +111,6 @@ void Error_Handler(void);
 #define UART_RX_GPIO_Port GPIOB
 #define M1_ENCODER_B_Pin GPIO_PIN_5
 #define M1_ENCODER_B_GPIO_Port GPIOB
-
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
@@ -121,3 +120,5 @@ void Error_Handler(void);
 #endif
 
 #endif /* __MAIN_H */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
