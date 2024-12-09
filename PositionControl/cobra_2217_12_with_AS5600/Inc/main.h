@@ -29,6 +29,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32g4xx_hal.h"
+
 #include "motorcontrol.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -87,6 +88,8 @@ void Error_Handler(void);
 #define M1_TEMPERATURE_GPIO_Port GPIOB
 #define M1_PWM_WL_Pin GPIO_PIN_15
 #define M1_PWM_WL_GPIO_Port GPIOB
+#define M1_ENCODER_A_Pin GPIO_PIN_6
+#define M1_ENCODER_A_GPIO_Port GPIOC
 #define M1_PWM_UH_Pin GPIO_PIN_8
 #define M1_PWM_UH_GPIO_Port GPIOA
 #define M1_PWM_VH_Pin GPIO_PIN_9
@@ -106,13 +109,8 @@ void Error_Handler(void);
 #define UART_TX_GPIO_Port GPIOB
 #define UART_RX_Pin GPIO_PIN_4
 #define UART_RX_GPIO_Port GPIOB
-#define M1_ENCODER_A_Pin GPIO_PIN_6
-#define M1_ENCODER_A_GPIO_Port GPIOB
-#define M1_ENCODER_B_Pin GPIO_PIN_7
+#define M1_ENCODER_B_Pin GPIO_PIN_5
 #define M1_ENCODER_B_GPIO_Port GPIOB
-#define M1_ENCODER_Z_Pin GPIO_PIN_8
-#define M1_ENCODER_Z_GPIO_Port GPIOB
-#define M1_ENCODER_Z_EXTI_IRQn EXTI9_5_IRQn
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

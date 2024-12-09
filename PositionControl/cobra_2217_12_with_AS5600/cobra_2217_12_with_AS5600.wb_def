@@ -10,8 +10,8 @@
 		<define key="ID_DEMAG" value="-544" />
 		<define key="HALL_SENSORS_PLACEMENT" value="DEGREES_120" />
 		<define key="HALL_PHASE_SHIFT" value="300" />
-		<define key="ENCODER_PPR" value="4096" />
-		<define key="HALL_SENSORS_AVAILABLE" value="FALSE" />
+		<define key="ENCODER_PPR" value="400" />
+		<define key="HALL_SENSORS_AVAILABLE" value="TRUE" />
 		<define key="ENCODER_AVAILABLE" value="TRUE" />
 		<define key="MOTOR_TYPE" value="PMSM" />
 		<define key="LDLQ_RATIO" value="1.000" />
@@ -61,7 +61,7 @@
 		<define key="ENC_INVERT_SPEED" value="DISABLE" />
 		<define key="ENC_AVERAGING_FIFO_DEPTH" value="16" />
 		<define key="HALL_MEAS_ERRORS_BEFORE_FAULTS" value="3" />
-		<define key="HALL_ICx_FILTER" value="190" />
+		<define key="HALL_ICx_FILTER" value="221" />
 		<define key="HALL_AVERAGING_FIFO_DEPTH" value="6" />
 		<define key="HALL_MTPA" value="FALSE" />
 		<define key="VARIANCE_THRESHOLD" value="0.1" />
@@ -218,7 +218,9 @@
 		<define key="SERIAL_COM_CHANNEL2" value="MC_PROTOCOL_REG_I_A" />
 		<define key="SERIAL_COM_MOTOR" value="0" />
 		<define key="LOW_SIDE_SIGNALS_ENABLING" value="LS_PWM_TIMER" />
-		<define key="RTOS" value="NONE" />
+		<define key="RTOS" value="FREERTOS" />
+		<define key="RTOS_TIMER" value="TIM6" />
+		<define key="RTOS_USE_IRQ" value="FALSE" />
 		<define key="HFI_IDH_DELAY" value="32400" />
 		<define key="HFI_STO_RPM_TH" value="OBS_MINIMUM_SPEED_RPM" />
 		<define key="HFI_RESTART_RPM_TH" value="(((HFI_STO_RPM_TH)+(STO_HFI_RPM_TH))/2)" />
@@ -277,15 +279,13 @@
 		<define key="H2_GPIO_PIN" value="GPIO_Pin_7" />
 		<define key="H3_GPIO_PORT" value="GPIOB" />
 		<define key="H3_GPIO_PIN" value="GPIO_Pin_8" />
-		<define key="ENC_TIMER_SELECTION" value="ENC_TIM4" />
-		<define key="ENC_TIMER_REMAPPING" value="NO_REMAP_TIM4" />
-		<define key="ENC_A_GPIO_PORT" value="GPIOB" />
+		<define key="ENC_TIMER_SELECTION" value="ENC_TIM3" />
+		<define key="ENC_TIMER_REMAPPING" value="NO_REMAP_TIM3" />
+		<define key="ENC_A_GPIO_PORT" value="GPIOC" />
 		<define key="ENC_A_GPIO_PIN" value="GPIO_Pin_6" />
 		<define key="ENC_B_GPIO_PORT" value="GPIOB" />
-		<define key="ENC_B_GPIO_PIN" value="GPIO_Pin_7" />
-		<define key="ENC_Z_GPIO_PORT" value="GPIOB" />
-		<define key="ENC_Z_GPIO_PIN" value="GPIO_Pin_8" />
-		<define key="ENC_USE_CH3" value="TRUE" />
+		<define key="ENC_B_GPIO_PIN" value="GPIO_Pin_5" />
+		<define key="ENC_USE_CH3" value="FALSE" />
 		<define key="R_BRAKE_GPIO_PORT" value="GPIOD" />
 		<define key="R_BRAKE_GPIO_PIN" value="GPIO_Pin_5" />
 		<define key="OV_CURR_BYPASS_GPIO_PORT" value="GPIOD" />

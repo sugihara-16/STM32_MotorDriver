@@ -170,7 +170,7 @@
 /**********  AUXILIARY ENCODER TIMER MOTOR 1 *************/
 #define M1_PULSE_NBR ( (4 * (M1_ENCODER_PPR)) - 1 )
 #define M1_ENC_IC_FILTER  12
-#define SPD_TIM_M1_IRQHandler TIM4_IRQHandler
+#define SPD_TIM_M1_IRQHandler TIM3_IRQHandler
 
 /* MMI Table Motor 1 MAX_MODULATION_85_PER_CENT */
 #define START_INDEX 46

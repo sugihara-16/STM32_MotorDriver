@@ -123,7 +123,7 @@ PosCtrl_Handle_t pPosCtrlM1 =
 {
   .SamplingTime  = 1.0f/MEDIUM_FREQUENCY_TASK_RATE,
   .SysTickPeriod = 1.0f/SYS_TICK_FREQUENCY,
-  .AlignmentCfg  = TC_ABSOLUTE_ALIGNMENT_SUPPORTED,
+  .AlignmentCfg  = TC_ABSOLUTE_ALIGNMENT_NOT_SUPPORTED,
 };
 
 /**
@@ -225,7 +225,7 @@ ENCODER_Handle_t ENCODER_M1 =
   .RevertSignal           =	(FunctionalState)ENC_INVERT_SPEED,
   .SpeedSamplingFreqHz   =	MEDIUM_FREQUENCY_TASK_RATE,
   .SpeedBufferSize       =	ENC_AVERAGING_FIFO_DEPTH,
-  .TIMx                  =	TIM4,
+  .TIMx                  =	TIM3,
   .ICx_Filter            =  M1_ENC_IC_FILTER,
 
 };

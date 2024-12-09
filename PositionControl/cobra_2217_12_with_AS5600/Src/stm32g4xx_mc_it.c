@@ -282,32 +282,6 @@ void HardFault_Handler(void)
 
 }
 
-void SysTick_Handler(void)
-{
-
-#ifdef MC_HAL_IS_USED
-static uint8_t SystickDividerCounter = SYSTICK_DIVIDER;
-  /* USER CODE BEGIN SysTick_IRQn 0 */
-
-  /* USER CODE END SysTick_IRQn 0 */
-  if (SystickDividerCounter == SYSTICK_DIVIDER)
-  {
-    HAL_IncTick();
-    HAL_SYSTICK_IRQHandler();
-    SystickDividerCounter = 0;
-  }
-  SystickDividerCounter ++;
-#endif /* MC_HAL_IS_USED */
-
-  /* USER CODE BEGIN SysTick_IRQn 1 */
-  /* USER CODE END SysTick_IRQn 1 */
-    MC_RunMotorControlTasks();
-    TC_IncTick(&pPosCtrlM1);
-
-  /* USER CODE BEGIN SysTick_IRQn 2 */
-  /* USER CODE END SysTick_IRQn 2 */
-}
-
 /**
   * @brief  This function handles Button IRQ on PIN PC10.
   */
@@ -318,20 +292,6 @@ void EXTI15_10_IRQHandler (void)
   {
     LL_EXTI_ClearFlag_0_31 (LL_EXTI_LINE_10);
     UI_HandleStartStopButton_cb ();
-  }
-
-}
-
-/**
-  * @brief  This function handles M1 Encoder Index IRQ on PIN PB8.
-  */
-void EXTI9_5_IRQHandler (void)
-{
-	/* USER CODE BEGIN ENCODER Z INDEX M1 */
-  if (LL_EXTI_ReadFlag_0_31(LL_EXTI_LINE_8))
-  {
-    LL_EXTI_ClearFlag_0_31 (LL_EXTI_LINE_8);
-    TC_EncoderReset(&pPosCtrlM1);
   }
 
 }
