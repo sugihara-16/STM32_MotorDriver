@@ -37,21 +37,45 @@
 #define MEAS_ERRORS_BEFORE_FAULTS       3 /*!< Number of speed
                                                              measurement errors before
                                                              main sensor goes in fault */
-/*** Encoder **********************/
-#define ENC_MEAS_ERRORS_BEFORE_FAULTS   3 /*!< Number of failed
-                                                        derived class specific speed
-                                                        measurements before main sensor
-                                                        goes in fault */
+/****** State Observer + PLL ****/
+#define VARIANCE_THRESHOLD              0.1 /*!<Maximum accepted
+                                                            variance on speed
+                                                            estimates (percentage) */
+/* State observer scaling factors F1 */
+#define F1                               16384
+#define F2                               16384
+#define F1_LOG                           LOG2(16384)
+#define F2_LOG                           LOG2(16384)
 
-#define ENC_INVERT_SPEED                DISABLE  /*!< To be enabled for
-                                                            encoder (main or aux) if
-                                                            measured speed is opposite
-                                                            to real one */
-#define ENC_AVERAGING_FIFO_DEPTH        16 /*!< depth of the FIFO used to
-                                                              average mechanical speed in
-                                                              0.1Hz resolution */
+/* State observer constants */
+#define GAIN1                            -18725
+#define GAIN2                            14993
+/*Only in case PLL is used, PLL gains */
+#define PLL_KP_GAIN                      1995
+#define PLL_KI_GAIN                      47
+#define PLL_KPDIV     16384
+#define PLL_KPDIV_LOG LOG2(PLL_KPDIV)
+#define PLL_KIDIV     65535
+#define PLL_KIDIV_LOG LOG2(PLL_KIDIV)
+
+#define OBS_MEAS_ERRORS_BEFORE_FAULTS    3  /*!< Number of consecutive errors
+                                                           on variance test before a speed
+                                                           feedback error is reported */
+#define STO_FIFO_DEPTH_DPP               64  /*!< Depth of the FIFO used
+                                                            to average mechanical speed
+                                                            in dpp format */
+#define STO_FIFO_DEPTH_DPP_LOG           LOG2(64)
+
+#define STO_FIFO_DEPTH_UNIT              64  /*!< Depth of the FIFO used
+                                                            to average mechanical speed
+                                                            in the unit defined by #SPEED_UNIT */
+#define BEMF_CONSISTENCY_TOL             64   /* Parameter for B-emf
+                                                            amplitude-speed consistency */
+#define BEMF_CONSISTENCY_GAIN            64   /* Parameter for B-emf
+                                                           amplitude-speed consistency */
 
 /* USER CODE BEGIN angle reconstruction M1 */
+#define PARK_ANGLE_COMPENSATION_FACTOR 0
 #define REV_PARK_ANGLE_COMPENSATION_FACTOR 0
 /* USER CODE END angle reconstruction M1 */
 
@@ -86,7 +110,9 @@
 #define TF_KDDIV_LOG                  LOG2(8192)
 #define TFDIFFERENTIAL_TERM_ENABLING  DISABLE
 
-#define POSITION_LOOP_FREQUENCY_HZ    1000 /*!<Execution rate of position control regulation loop (Hz) */
+/* Speed control loop */
+#define SPEED_LOOP_FREQUENCY_HZ       1000 /*!<Execution rate of speed
+                                                      regulation loop (Hz) */
 
 #define PID_SPEED_KP_DEFAULT          100/(SPEED_UNIT/10) /* Workbench compute the gain for 01Hz unit*/
 #define PID_SPEED_KI_DEFAULT          700/(SPEED_UNIT/10) /* Workbench compute the gain for 01Hz unit*/
@@ -114,18 +140,6 @@
 #define DEFAULT_TORQUE_COMPONENT       0
 #define DEFAULT_FLUX_COMPONENT         0
 
-#define PID_POSITION_KP_GAIN			10000
-#define PID_POSITION_KI_GAIN			1000
-#define PID_POSITION_KD_GAIN			1000
-#define PID_POSITION_KPDIV				1024
-#define PID_POSITION_KIDIV				32768
-#define PID_POSITION_KDDIV				16
-#define PID_POSITION_KPDIV_LOG			LOG2(1024)
-#define PID_POSITION_KIDIV_LOG			LOG2(32768)
-#define PID_POSITION_KDDIV_LOG			LOG2(16)
-#define PID_POSITION_ANGLE_STEP			10.0
-#define PID_POSITION_MOV_DURATION		10.0
-
 /**************************    FIRMWARE PROTECTIONS SECTION   *****************/
 #define OV_VOLTAGE_PROT_ENABLING        ENABLE
 #define UV_VOLTAGE_PROT_ENABLING        ENABLE
@@ -150,13 +164,48 @@
                                                           protection (if supported by
                                                           power stage) */
 /******************************   START-UP PARAMETERS   **********************/
-/* Encoder alignment */
-#define ALIGNMENT_DURATION              700 /*!< milliseconds */
-#define ALIGNMENT_ANGLE_DEG             90 /*!< degrees [0...359] */
-#define FINAL_I_ALIGNMENT               544 /*!< s16A */
-// With ALIGNMENT_ANGLE_DEG equal to 90 degrees final alignment
-// phase current = (FINAL_I_ALIGNMENT * 1.65/ Av)/(32767 * Rshunt)
-// being Av the voltage gain between Rshunt and A/D input
+
+/* Phase 1 */
+#define PHASE1_DURATION                1000 /*milliseconds */
+#define PHASE1_FINAL_SPEED_UNIT         (0*SPEED_UNIT/_RPM)
+#define PHASE1_FINAL_CURRENT           544
+/* Phase 2 */
+#define PHASE2_DURATION                5628 /*milliseconds */
+#define PHASE2_FINAL_SPEED_UNIT         (2814*SPEED_UNIT/_RPM)
+#define PHASE2_FINAL_CURRENT           544
+/* Phase 3 */
+#define PHASE3_DURATION                0 /*milliseconds */
+#define PHASE3_FINAL_SPEED_UNIT         (2814*SPEED_UNIT/_RPM)
+#define PHASE3_FINAL_CURRENT           544
+/* Phase 4 */
+#define PHASE4_DURATION                0 /*milliseconds */
+#define PHASE4_FINAL_SPEED_UNIT         (2814*SPEED_UNIT/_RPM)
+#define PHASE4_FINAL_CURRENT           544
+/* Phase 5 */
+#define PHASE5_DURATION                0 /* milliseconds */
+#define PHASE5_FINAL_SPEED_UNIT         (2814*SPEED_UNIT/_RPM)
+#define PHASE5_FINAL_CURRENT           544
+
+#define ENABLE_SL_ALGO_FROM_PHASE      2
+/* Sensor-less rev-up sequence */
+#define STARTING_ANGLE_DEG             0  /*!< degrees [0...359] */
+/* Observer start-up output conditions  */
+#define OBS_MINIMUM_SPEED_RPM          2533
+
+#define NB_CONSECUTIVE_TESTS           2 /* corresponding to
+                                                         former NB_CONSECUTIVE_TESTS/
+                                                         (TF_REGULATION_RATE/
+                                                         MEDIUM_FREQUENCY_TASK_RATE) */
+#define SPEED_BAND_UPPER_LIMIT         17 /*!< It expresses how much
+                                                            estimated speed can exceed
+                                                            forced stator electrical
+                                                            without being considered wrong.
+                                                            In 1/16 of forced speed */
+#define SPEED_BAND_LOWER_LIMIT         15  /*!< It expresses how much
+                                                             estimated speed can be below
+                                                             forced stator electrical
+                                                             without being considered wrong.
+                                                             In 1/16 of forced speed */
 
 #define TRANSITION_DURATION            25  /* Switch over duration, ms */
 /******************************   BUS VOLTAGE Motor 1  **********************/

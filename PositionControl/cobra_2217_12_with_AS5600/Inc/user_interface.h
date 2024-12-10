@@ -389,17 +389,6 @@ bool UI_ExecSpeedRamp(UI_Handle_t *pHandle, int32_t wFinalMecSpeedUnit, uint16_t
   */
 bool UI_ExecTorqueRamp(UI_Handle_t *pHandle, int16_t hTargetFinal, uint16_t hDurationms);
 
-/**
-  * @brief  It is used to execute a position command coming from the user.
-  * @param  pHandle: Pointer on Handle structure of UI component.
-  * @param  fTargetPosition: final position value. See MCI interface for more
-            details.
-  * @param  fDuration: the duration of the ramp expressed in seconds. It
-  *         is possible to set 0 to perform an instantaneous change in the value.
-  *  @retval Return true if the command executed successfully, otherwise false.
-  */
-bool UI_ExecPositionCmd(UI_Handle_t *pHandle, float fTargetPosition, float fDuration);
-
 /* Executes a get Revup data command coming from the user */
 bool UI_GetRevupData(UI_Handle_t *pHandle, uint8_t bStage, uint16_t* pDurationms,
                      int16_t* pFinalMecSpeedUnit, int16_t* pFinalTorque );

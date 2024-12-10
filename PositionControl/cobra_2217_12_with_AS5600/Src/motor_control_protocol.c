@@ -487,11 +487,6 @@ __weak void MCP_ReceivedFrame(MCP_Handle_t *pHandle, uint8_t Code, uint8_t *buff
     break;
   case MC_PROTOCOL_CODE_SET_POSITION_CMD:
     {
-      FloatToU32 Position;
-      FloatToU32 Duration;
-      Position.U32_Val = buffer[0] + (buffer[1] << 8) + (buffer[2] << 16) + (buffer[3] << 24);
-      Duration.U32_Val = buffer[4] + (buffer[5] << 8) + (buffer[6] << 16) + (buffer[7] << 24);
-      bNoError = UI_ExecPositionCmd(&pHandle->_Super, Position.Float_Val, Duration.Float_Val);
     }
     break;
 

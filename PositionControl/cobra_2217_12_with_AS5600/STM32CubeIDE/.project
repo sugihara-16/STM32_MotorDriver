@@ -342,16 +342,6 @@
 			<locationURI>PARENT-1-PROJECT_LOC/MCSDK_v5.4.8-Full/MotorControl/MCSDK/MCLib/Any/Src/digital_output.c</locationURI>
 		</link>
 		<link>
-			<name>Middlewares/MotorControl/enc_align_ctrl.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/MCSDK_v5.4.8-Full/MotorControl/MCSDK/MCLib/Any/Src/enc_align_ctrl.c</locationURI>
-		</link>
-		<link>
-			<name>Middlewares/MotorControl/encoder_speed_pos_fdbk.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/MCSDK_v5.4.8-Full/MotorControl/MCSDK/MCLib/Any/Src/encoder_speed_pos_fdbk.c</locationURI>
-		</link>
-		<link>
 			<name>Middlewares/MotorControl/frame_communication_protocol.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/MCSDK_v5.4.8-Full/MotorControl/MCSDK/UILibrary/Src/frame_communication_protocol.c</locationURI>
@@ -427,9 +417,9 @@
 			<locationURI>PARENT-1-PROJECT_LOC/MCSDK_v5.4.8-Full/MotorControl/MCSDK/MCLib/Any/Src/state_machine.c</locationURI>
 		</link>
 		<link>
-			<name>Middlewares/MotorControl/trajectory_ctrl.c</name>
+			<name>Middlewares/MotorControl/sto_pll_speed_pos_fdbk.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/MCSDK_v5.4.8-Full/MotorControl/MCSDK/MCLib/Any/Src/trajectory_ctrl.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/MCSDK_v5.4.8-Full/MotorControl/MCSDK/MCLib/Any/Src/sto_pll_speed_pos_fdbk.c</locationURI>
 		</link>
 		<link>
 			<name>Middlewares/MotorControl/ui_irq_handler.c</name>

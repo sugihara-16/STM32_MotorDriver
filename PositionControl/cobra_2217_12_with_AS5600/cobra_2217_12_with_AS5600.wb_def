@@ -11,8 +11,8 @@
 		<define key="HALL_SENSORS_PLACEMENT" value="DEGREES_120" />
 		<define key="HALL_PHASE_SHIFT" value="300" />
 		<define key="ENCODER_PPR" value="400" />
-		<define key="HALL_SENSORS_AVAILABLE" value="TRUE" />
-		<define key="ENCODER_AVAILABLE" value="TRUE" />
+		<define key="HALL_SENSORS_AVAILABLE" value="FALSE" />
+		<define key="ENCODER_AVAILABLE" value="FALSE" />
 		<define key="MOTOR_TYPE" value="PMSM" />
 		<define key="LDLQ_RATIO" value="1.000" />
 		<define key="DC_CURRENT_RS_MEAS" value="1.00" />
@@ -49,8 +49,8 @@
 		<define key="dV_dT" value="0.023" />
 		<define key="T_MAX" value="110" />
 		<define key="PWBDID" value="10015" />
-		<define key="ENCODER" value="TRUE" />
-		<define key="SPEED_SENSOR_SELECTION" value="ENCODER" />
+		<define key="STATE_OBSERVER_PLL" value="TRUE" />
+		<define key="SPEED_SENSOR_SELECTION" value="STATE_OBSERVER_PLL" />
 		<define key="SINGLEDRIVE" value="TRUE" />
 		<define key="DRIVES_NUMBER_SELECTION" value="SINGLEDRIVE" />
 		<define key="MAX_APPLICATION_SPEED" value="16074" />
@@ -143,7 +143,7 @@
 		<define key="TF_KIDIV" value="16384" />
 		<define key="TF_KDDIV" value="8192" />
 		<define key="TFDIFFERENTIAL_TERM_ENABLING" value="DISABLE" />
-		<define key="POSITION_LOOP_FREQUENCY_HZ" value="1000" />
+		<define key="SPEED_LOOP_FREQUENCY_HZ" value="1000" />
 		<define key="PID_SPEED_KP_DEFAULT" value="100" />
 		<define key="PID_SPEED_KI_DEFAULT" value="700" />
 		<define key="PID_SPEED_KD_DEFAULT" value="0" />
@@ -155,13 +155,7 @@
 		<define key="DEFAULT_TARGET_SPEED_RPM" value="2533" />
 		<define key="DEFAULT_TORQUE_COMPONENT" value="0" />
 		<define key="DEFAULT_FLUX_COMPONENT" value="0" />
-		<define key="POSITION_CTRL_ENABLING" value="ENABLE" />
-		<define key="POSITION_CTRL_KP_GAIN" value="10000" />
-		<define key="POSITION_CTRL_KI_GAIN" value="1000" />
-		<define key="POSITION_CTRL_KD_GAIN" value="1000" />
-		<define key="POSITION_CTRL_KPDIV" value="1024" />
-		<define key="POSITION_CTRL_KIDIV" value="32768" />
-		<define key="POSITION_CTRL_KDDIV" value="16" />
+		<define key="POSITION_CTRL_ENABLING" value="DISABLE" />
 		<define key="OV_VOLTAGE_PROT_ENABLING" value="ENABLE" />
 		<define key="UV_VOLTAGE_PROT_ENABLING" value="ENABLE" />
 		<define key="OV_VOLTAGE_THRESHOLD_V" value="28" />
@@ -510,7 +504,7 @@
 		<define key="SHARED_SIGNAL_ENABLE" value="FALSE" />
 		<define key="DAC_EMULATED" value="FALSE" />
 		<define key="MCU" value="STM32G431CB" />
-		<define key="BOARD" value="CUSTOM" />
+		<define key="BOARD" value="B-G431B-ESC1" />
 		<define key="MC_WORKBENCH_VERSION" value="5.4.8.21553" />
 	</defines>
 </STWorkBench>
