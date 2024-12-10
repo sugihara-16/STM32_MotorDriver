@@ -1,36 +1,45 @@
-/*
-******************************************************************************
-* File Name          : mag_encoder.h
-* Description        : Magnetic Encoder Interface
-******************************************************************************
-*/
+#ifndef MAG_ENCODER_H_
+#define MAG_ENCODER_H_
+
+#include <stdint.h>
 #include "stm32g4xx_hal.h"
-#include "stdint.h"
 
-#ifndef __cplusplus
-#error "Please define __cplusplus, because this is a c++ based file "
-#endif
-
-class MagEncoder
-{
+class MagEncoder {
 public:
-  MagEncoder(){};
-  ~MagEncoder(){};
-  
-  static const uint8_t AS5600_I2C_ADDRESS =  0x36 << 1; // 0x36 << 1; NOTE: STM: i2c_address << 1 !!!
-  static const uint8_t AS5600_REG_RAW_ANGLE =  0x0C;
-  static const uint8_t UPDATE_INTERVAL = 20; //20 -> 50Hz
+    // コンストラクタ
+    MagEncoder();
 
-  void init(I2C_HandleTypeDef* hi2c);
-  void update(void);
+    // 初期化
+    HAL_StatusTypeDef init(I2C_HandleTypeDef *i2cHandle);
+
+    // データ更新
+    HAL_StatusTypeDef update();
+
+    // データ取得
+    uint16_t getAngle() const;
+    uint16_t getRawAngle() const;
+    uint16_t getMagneticMagnitude() const;
+    uint8_t getAGC() const;
+    bool isMagnetDetected() const;
 
 private:
-  I2C_HandleTypeDef* hi2c_;
+    // プライベートメンバ
+    I2C_HandleTypeDef *i2cHandle_;
+    uint8_t i2cAddr_;
+    uint32_t i2c_error_code_;
 
-  uint16_t raw_encoder_value_;
-  uint32_t last_time_;
+    uint32_t last_time_;
+    uint16_t device_id_;
 
-  uint32_t i2c_error_code_;
+    uint16_t angle_;
+    uint16_t rawAngle_;
+    uint16_t magneticMagnitude_;
+    uint8_t agc_;
+    bool magnetDetected_;
 
+    // プライベートメソッド
+    HAL_StatusTypeDef readRegister(uint8_t regAddr, uint8_t *data, uint16_t len);
+    HAL_StatusTypeDef writeRegister(uint8_t regAddr, uint8_t *data, uint16_t len);
 };
 
+#endif // MAG_ENCODER_H_
