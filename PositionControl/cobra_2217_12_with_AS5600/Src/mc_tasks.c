@@ -25,7 +25,6 @@
 #include "mc_math.h"
 #include "motorcontrol.h"
 #include "regular_conversion_manager.h"
-#include "cmsis_os.h"
 #include "mc_interface.h"
 #include "mc_tuning.h"
 #include "digital_output.h"
@@ -265,6 +264,10 @@ __weak void MC_RunMotorControlTasks(void)
   if ( bMCBootCompleted ) {
     /* ** Medium Frequency Tasks ** */
     MC_Scheduler();
+
+    /* Safety task is run after Medium Frequency task so that
+     * it can overcome actions they initiated if needed. */
+    TSK_SafetyTask();
 
     /* ** User Interface Task ** */
     UI_Scheduler();
@@ -915,35 +918,6 @@ __weak void TSK_HardwareFaultTask(void)
 
   /* USER CODE END TSK_HardwareFaultTask 1 */
 }
-
-/* startMediumFrequencyTask function */
-void startMediumFrequencyTask(void const * argument)
-{
-  /* USER CODE BEGIN MF task 1 */
-  /* Infinite loop */
-  for(;;)
-  {
-    /* delay of 500us */
-    vTaskDelay(1);
-    MC_RunMotorControlTasks();
-  }
-  /* USER CODE END MF task 1 */
-}
-
-/* startSafetyTask function */
-void StartSafetyTask(void const * argument)
-{
-  /* USER CODE BEGIN SF task 1 */
-  /* Infinite loop */
-  for(;;)
-  {
-    /* delay of 500us */
-    vTaskDelay(1);
-    TSK_SafetyTask();
-  }
-  /* USER CODE END SF task 1 */
-}
-
  /**
   * @brief  Locks GPIO pins used for Motor Control to prevent accidental reconfiguration
   */

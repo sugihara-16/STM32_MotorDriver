@@ -72,9 +72,9 @@ void HAL_MspInit(void)
   __HAL_RCC_SYSCFG_CLK_ENABLE();
   __HAL_RCC_PWR_CLK_ENABLE();
 
+  HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_3);
+
   /* System interrupt init*/
-  /* PendSV_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(PendSV_IRQn, 15, 0);
 
   /** Disable the internal Pull-Up in Dead Battery pins of UCPD peripheral
   */
@@ -414,9 +414,6 @@ void HAL_DAC_MspInit(DAC_HandleTypeDef* hdac)
   /* USER CODE END DAC3_MspInit 0 */
     /* Peripheral clock enable */
     __HAL_RCC_DAC3_CLK_ENABLE();
-    /* DAC3 interrupt Init */
-    HAL_NVIC_SetPriority(TIM6_DAC_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(TIM6_DAC_IRQn);
   /* USER CODE BEGIN DAC3_MspInit 1 */
 
   /* USER CODE END DAC3_MspInit 1 */
@@ -439,9 +436,6 @@ void HAL_DAC_MspDeInit(DAC_HandleTypeDef* hdac)
   /* USER CODE END DAC3_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_DAC3_CLK_DISABLE();
-
-    /* DAC3 interrupt DeInit */
-    HAL_NVIC_DisableIRQ(TIM6_DAC_IRQn);
   /* USER CODE BEGIN DAC3_MspDeInit 1 */
 
   /* USER CODE END DAC3_MspDeInit 1 */

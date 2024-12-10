@@ -212,9 +212,7 @@
 		<define key="SERIAL_COM_CHANNEL2" value="MC_PROTOCOL_REG_I_A" />
 		<define key="SERIAL_COM_MOTOR" value="0" />
 		<define key="LOW_SIDE_SIGNALS_ENABLING" value="LS_PWM_TIMER" />
-		<define key="RTOS" value="FREERTOS" />
-		<define key="RTOS_TIMER" value="TIM6" />
-		<define key="RTOS_USE_IRQ" value="FALSE" />
+		<define key="RTOS" value="NONE" />
 		<define key="HFI_IDH_DELAY" value="32400" />
 		<define key="HFI_STO_RPM_TH" value="OBS_MINIMUM_SPEED_RPM" />
 		<define key="HFI_RESTART_RPM_TH" value="(((HFI_STO_RPM_TH)+(STO_HFI_RPM_TH))/2)" />
