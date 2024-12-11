@@ -133,7 +133,7 @@
 #define IQMAX                          544
 
 /* Default settings */
-#define DEFAULT_CONTROL_MODE           STC_SPEED_MODE /*!< STC_TORQUE_MODE or
+#define DEFAULT_CONTROL_MODE           STC_TORQUE_MODE /*!< STC_TORQUE_MODE or
                                                         STC_SPEED_MODE */
 #define DEFAULT_TARGET_SPEED_RPM      2533
 #define DEFAULT_TARGET_SPEED_UNIT      (DEFAULT_TARGET_SPEED_RPM*SPEED_UNIT/_RPM)
