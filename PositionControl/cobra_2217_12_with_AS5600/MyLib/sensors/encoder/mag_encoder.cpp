@@ -1,6 +1,5 @@
 #include "mag_encoder.h"
 
-// AS5600レジスタアドレス
 #define AS5600_SLAVE_ADDRESS 0x36
 #define AS5600_RAWANGLE_REG_ADDR 0x0C
 #define AS5600_ANGLE_REG_ADDR 0x0E
@@ -38,7 +37,8 @@ HAL_StatusTypeDef MagEncoder::update() {
 
     // ANGLE
     if (readRegister(AS5600_ANGLE_REG_ADDR, data, 2) == HAL_OK) {
-        angle_ = (data[0] << 8) | data[1];
+      uint16_t inverse_angle = (data[0] << 8) | data[1];
+      angle_ = 4096 - inverse_angle;
    }
 
     // MAGNITUDE
