@@ -1,15 +1,7 @@
 #include "pos_controller.h"
 
-#ifdef __cplusplus
- extern "C" {
-#endif /* __cplusplus */
-#include "motorcontrol.h"
-#ifdef __cplusplus
- }
-#endif /* __cplusplus */
-
 PosController::PosController():
-  p_gain_(0.1f),
+  p_gain_(0.01f),
   i_gain_(0.01f),
   d_gain_(0.0f),
   target_p_(2048),
@@ -23,15 +15,40 @@ void PosController::init(MagEncoder *mag_encoder)
 {
   mag_encoder_ = mag_encoder;
   last_update_time_ = HAL_GetTick();
+  // MotorInit();
+  rot_dir_ = -1;
+  start_flag_ = false;
   MC_AcknowledgeFaultMotor1();
-  MC_ProgramSpeedRampMotor1(6000/6,1000);
   MC_StartMotor1();
-  HAL_Delay(10000);
-  MC_StopMotor1();
-  HAL_Delay(1000);
+  motor_crr_fault_code_ = 0;
+  motor_past_fault_code_ = 0;
+}
+
+void PosController::MotorInit()
+{
+  while (MC_GetSTMStateMotor1() != IDLE)
+    {
+      // motor_fault_code_ = MC_GetCurrentFaultsMotor1();
+      MC_AcknowledgeFaultMotor1();
+    }
+  while (!MC_StartMotor1())
+    {
+      // motor_fault_code_ = MC_GetCurrentFaultsMotor1();
+      MC_AcknowledgeFaultMotor1();
+    }
+  MC_ProgramTorqueRampMotor1(0,0);
 }
 void PosController::update()
 {
+  motor_state_ = MC_GetSTMStateMotor1();
+  if(motor_state_ == FAULT_OVER || motor_state_ == FAULT_NOW)
+    {
+      while(1)
+        {
+          motor_crr_fault_code_ = MC_GetCurrentFaultsMotor1();
+          motor_past_fault_code_ = MC_GetOccurredFaultsMotor1();
+        }
+    }
   uint32_t dur = HAL_GetTick() - last_update_time_;
   if( dur >= POS_CONTROL_DUR)
     {
@@ -47,5 +64,6 @@ void PosController::update()
 
 void PosController::sendTorqueCommand()
 {
-  MC_ProgramTorqueRampMotor1(target_final_torque_, torque_reach_dur_);
+  MC_AcknowledgeFaultMotor1();
+  MC_ProgramTorqueRampMotor1(target_final_torque_, 10);
 }
