@@ -14,6 +14,7 @@ PosController::PosController():
   d_gain_(0.0f),
   target_p_(2048),
   target_d_(0),
+  err_i_lim_(10000.0f),
   torque_reach_dur_(100)
 {
 }
@@ -36,17 +37,15 @@ void PosController::update()
     {
       last_update_time_ = HAL_GetTick();
       err_p_ = target_p_ -  mag_encoder_->getAngle();
-      err_i_ += err_p_ * dur;
+      err_i_ = std::max(err_i_ + err_p_ * dur, err_i_lim_);
       err_d_ = err_p_ / dur;
       // target_final_torque_ = err_p_ * p_gain_ + err_i_ * i_gain_ + err_d_ * d_gain_;
-      target_final_torque_f_ = err_p_ * p_gain_;
-      target_final_torque_t_ = (int16_t)(target_final_torque_f_);
-      target_final_torque_ = target_final_torque_t_;
+      target_final_torque_ = (int16_t)(err_p_ * p_gain_);
       sendTorqueCommand();
     }
 }
 
 void PosController::sendTorqueCommand()
 {
-  // MC_ProgramTorqueRampMotor1(target_final_torque_, torque_reach_dur_);
+  MC_ProgramTorqueRampMotor1(target_final_torque_, torque_reach_dur_);
 }
