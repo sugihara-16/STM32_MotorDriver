@@ -342,6 +342,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/MCSDK_v5.4.8-Full/MotorControl/MCSDK/MCLib/Any/Src/digital_output.c</locationURI>
 		</link>
 		<link>
+			<name>Middlewares/MotorControl/feed_forward_ctrl.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/MCSDK_v5.4.8-Full/MotorControl/MCSDK/MCLib/Any/Src/feed_forward_ctrl.c</locationURI>
+		</link>
+		<link>
 			<name>Middlewares/MotorControl/frame_communication_protocol.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/MCSDK_v5.4.8-Full/MotorControl/MCSDK/UILibrary/Src/frame_communication_protocol.c</locationURI>

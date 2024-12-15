@@ -4,10 +4,10 @@
 		<define key="POLE_PAIR_NUM" value="7" />
 		<define key="RS" value="0.10" />
 		<define key="LS" value="0.000007" />
-		<define key="NOMINAL_CURRENT" value="544" />
+		<define key="NOMINAL_CURRENT" value="8167" />
 		<define key="MOTOR_MAX_SPEED_RPM" value="16074" />
 		<define key="MOTOR_VOLTAGE_CONSTANT" value="0.6" />
-		<define key="ID_DEMAG" value="-544" />
+		<define key="ID_DEMAG" value="-8167" />
 		<define key="HALL_SENSORS_PLACEMENT" value="DEGREES_120" />
 		<define key="HALL_PHASE_SHIFT" value="300" />
 		<define key="ENCODER_PPR" value="400" />
@@ -15,7 +15,7 @@
 		<define key="ENCODER_AVAILABLE" value="FALSE" />
 		<define key="MOTOR_TYPE" value="PMSM" />
 		<define key="LDLQ_RATIO" value="1.000" />
-		<define key="DC_CURRENT_RS_MEAS" value="1.00" />
+		<define key="DC_CURRENT_RS_MEAS" value="15.00" />
 		<define key="PHASE_UH_POLARITY" value="H_ACTIVE_HIGH" />
 		<define key="PHASE_VH_POLARITY" value="H_ACTIVE_HIGH" />
 		<define key="PHASE_WH_POLARITY" value="H_ACTIVE_HIGH" />
@@ -144,16 +144,16 @@
 		<define key="TF_KDDIV" value="8192" />
 		<define key="TFDIFFERENTIAL_TERM_ENABLING" value="DISABLE" />
 		<define key="SPEED_LOOP_FREQUENCY_HZ" value="1000" />
-		<define key="PID_SPEED_KP_DEFAULT" value="100" />
-		<define key="PID_SPEED_KI_DEFAULT" value="700" />
+		<define key="PID_SPEED_KP_DEFAULT" value="2726" />
+		<define key="PID_SPEED_KI_DEFAULT" value="203" />
 		<define key="PID_SPEED_KD_DEFAULT" value="0" />
-		<define key="SP_KPDIV" value="16" />
-		<define key="SP_KIDIV" value="256" />
+		<define key="SP_KPDIV" value="4096" />
+		<define key="SP_KIDIV" value="16384" />
 		<define key="SP_KDDIV" value="16" />
 		<define key="SPD_DIFFERENTIAL_TERM_ENABLING" value="DISABLE" />
 		<define key="DEFAULT_CONTROL_MODE" value="STC_TORQUE_MODE" />
 		<define key="DEFAULT_TARGET_SPEED_RPM" value="2533" />
-		<define key="DEFAULT_TORQUE_COMPONENT" value="0" />
+		<define key="DEFAULT_TORQUE_COMPONENT" value="2722" />
 		<define key="DEFAULT_FLUX_COMPONENT" value="0" />
 		<define key="POSITION_CTRL_ENABLING" value="DISABLE" />
 		<define key="OV_VOLTAGE_PROT_ENABLING" value="ENABLE" />
@@ -169,22 +169,22 @@
 		<define key="STARTING_ANGLE_DEG" value="0" />
 		<define key="PHASE1_DURATION" value="1000" />
 		<define key="PHASE1_FINAL_SPEED_RPM" value="0" />
-		<define key="PHASE1_FINAL_CURRENT" value="544" />
+		<define key="PHASE1_FINAL_CURRENT" value="1089" />
 		<define key="PHASE2_DURATION" value="5628" />
 		<define key="PHASE2_FINAL_SPEED_RPM" value="2814" />
-		<define key="PHASE2_FINAL_CURRENT" value="544" />
+		<define key="PHASE2_FINAL_CURRENT" value="1089" />
 		<define key="PHASE3_DURATION" value="0" />
 		<define key="PHASE3_FINAL_SPEED_RPM" value="2814" />
-		<define key="PHASE3_FINAL_CURRENT" value="544" />
+		<define key="PHASE3_FINAL_CURRENT" value="1089" />
 		<define key="PHASE4_DURATION" value="0" />
 		<define key="PHASE4_FINAL_SPEED_RPM" value="2814" />
-		<define key="PHASE4_FINAL_CURRENT" value="544" />
+		<define key="PHASE4_FINAL_CURRENT" value="1089" />
 		<define key="PHASE5_DURATION" value="0" />
 		<define key="PHASE5_FINAL_SPEED_RPM" value="2814" />
-		<define key="PHASE5_FINAL_CURRENT" value="544" />
+		<define key="PHASE5_FINAL_CURRENT" value="1089" />
 		<define key="ENABLE_SL_ALGO_FROM_PHASE" value="2" />
-		<define key="TRANSITION_DURATION" value="25" />
-		<define key="OBS_MINIMUM_SPEED_RPM" value="2533" />
+		<define key="TRANSITION_DURATION" value="0" />
+		<define key="OBS_MINIMUM_SPEED_RPM" value="1" />
 		<define key="NB_CONSECUTIVE_TESTS" value="2" />
 		<define key="SPEED_BAND_UPPER_LIMIT" value="17" />
 		<define key="SPEED_BAND_LOWER_LIMIT" value="15" />
@@ -196,11 +196,11 @@
 		<define key="FW_KPDIV" value="32768" />
 		<define key="FW_KIDIV" value="32768" />
 		<define key="MTPA_ENABLING" value="DISABLE" />
-		<define key="FEED_FORWARD_CURRENT_REG_ENABLING" value="DISABLE" />
+		<define key="FEED_FORWARD_CURRENT_REG_ENABLING" value="ENABLE" />
 		<define key="CONSTANT1_Q" value="37944" />
 		<define key="CONSTANT1_D" value="37944" />
 		<define key="CONSTANT2_QD" value="7525" />
-		<define key="IQMAX" value="544" />
+		<define key="IQMAX" value="8167" />
 		<define key="SEGDIV" value="0" />
 		<define key="ANGC" value="{0,0,0,0,0,0,0,0}" />
 		<define key="OFST" value="{0,0,0,0,0,0,0,0}" />
@@ -212,7 +212,6 @@
 		<define key="SERIAL_COM_CHANNEL2" value="MC_PROTOCOL_REG_I_A" />
 		<define key="SERIAL_COM_MOTOR" value="0" />
 		<define key="LOW_SIDE_SIGNALS_ENABLING" value="LS_PWM_TIMER" />
-		<define key="SPEED_FEEDBACK_CHECK" value="TRUE" />
 		<define key="RTOS" value="FREERTOS" />
 		<define key="RTOS_TIMER" value="TIM6" />
 		<define key="RTOS_USE_IRQ" value="TRUE" />

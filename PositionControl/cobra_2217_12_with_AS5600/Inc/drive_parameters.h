@@ -114,15 +114,15 @@
 #define SPEED_LOOP_FREQUENCY_HZ       1000 /*!<Execution rate of speed
                                                       regulation loop (Hz) */
 
-#define PID_SPEED_KP_DEFAULT          100/(SPEED_UNIT/10) /* Workbench compute the gain for 01Hz unit*/
-#define PID_SPEED_KI_DEFAULT          700/(SPEED_UNIT/10) /* Workbench compute the gain for 01Hz unit*/
+#define PID_SPEED_KP_DEFAULT          2726/(SPEED_UNIT/10) /* Workbench compute the gain for 01Hz unit*/
+#define PID_SPEED_KI_DEFAULT          203/(SPEED_UNIT/10) /* Workbench compute the gain for 01Hz unit*/
 #define PID_SPEED_KD_DEFAULT          0/(SPEED_UNIT/10) /* Workbench compute the gain for 01Hz unit*/
 /* Speed PID parameter dividers */
-#define SP_KPDIV                      16
-#define SP_KIDIV                      256
+#define SP_KPDIV                      4096
+#define SP_KIDIV                      16384
 #define SP_KDDIV                      16
-#define SP_KPDIV_LOG                  LOG2(16)
-#define SP_KIDIV_LOG                  LOG2(256)
+#define SP_KPDIV_LOG                  LOG2(4096)
+#define SP_KIDIV_LOG                  LOG2(16384)
 #define SP_KDDIV_LOG                  LOG2(16)
 
 /* USER CODE BEGIN PID_SPEED_INTEGRAL_INIT_DIV */
@@ -130,14 +130,14 @@
 /* USER CODE END PID_SPEED_INTEGRAL_INIT_DIV */
 
 #define SPD_DIFFERENTIAL_TERM_ENABLING DISABLE
-#define IQMAX                          544
+#define IQMAX                          8167
 
 /* Default settings */
 #define DEFAULT_CONTROL_MODE           STC_TORQUE_MODE /*!< STC_TORQUE_MODE or
                                                         STC_SPEED_MODE */
 #define DEFAULT_TARGET_SPEED_RPM      2533
 #define DEFAULT_TARGET_SPEED_UNIT      (DEFAULT_TARGET_SPEED_RPM*SPEED_UNIT/_RPM)
-#define DEFAULT_TORQUE_COMPONENT       0
+#define DEFAULT_TORQUE_COMPONENT       2722
 #define DEFAULT_FLUX_COMPONENT         0
 
 /**************************    FIRMWARE PROTECTIONS SECTION   *****************/
@@ -168,29 +168,29 @@
 /* Phase 1 */
 #define PHASE1_DURATION                1000 /*milliseconds */
 #define PHASE1_FINAL_SPEED_UNIT         (0*SPEED_UNIT/_RPM)
-#define PHASE1_FINAL_CURRENT           544
+#define PHASE1_FINAL_CURRENT           1089
 /* Phase 2 */
 #define PHASE2_DURATION                5628 /*milliseconds */
 #define PHASE2_FINAL_SPEED_UNIT         (2814*SPEED_UNIT/_RPM)
-#define PHASE2_FINAL_CURRENT           544
+#define PHASE2_FINAL_CURRENT           1089
 /* Phase 3 */
 #define PHASE3_DURATION                0 /*milliseconds */
 #define PHASE3_FINAL_SPEED_UNIT         (2814*SPEED_UNIT/_RPM)
-#define PHASE3_FINAL_CURRENT           544
+#define PHASE3_FINAL_CURRENT           1089
 /* Phase 4 */
 #define PHASE4_DURATION                0 /*milliseconds */
 #define PHASE4_FINAL_SPEED_UNIT         (2814*SPEED_UNIT/_RPM)
-#define PHASE4_FINAL_CURRENT           544
+#define PHASE4_FINAL_CURRENT           1089
 /* Phase 5 */
 #define PHASE5_DURATION                0 /* milliseconds */
 #define PHASE5_FINAL_SPEED_UNIT         (2814*SPEED_UNIT/_RPM)
-#define PHASE5_FINAL_CURRENT           544
+#define PHASE5_FINAL_CURRENT           1089
 
 #define ENABLE_SL_ALGO_FROM_PHASE      2
 /* Sensor-less rev-up sequence */
 #define STARTING_ANGLE_DEG             0  /*!< degrees [0...359] */
 /* Observer start-up output conditions  */
-#define OBS_MINIMUM_SPEED_RPM          2533
+#define OBS_MINIMUM_SPEED_RPM          1
 
 #define NB_CONSECUTIVE_TESTS           2 /* corresponding to
                                                          former NB_CONSECUTIVE_TESTS/
@@ -207,7 +207,7 @@
                                                              without being considered wrong.
                                                              In 1/16 of forced speed */
 
-#define TRANSITION_DURATION            25  /* Switch over duration, ms */
+#define TRANSITION_DURATION            0  /* Switch over duration, ms */
 /******************************   BUS VOLTAGE Motor 1  **********************/
 #define  M1_VBUS_SAMPLING_TIME  LL_ADC_SAMPLING_CYCLE(47)
 /******************************   Temperature sensing Motor 1  **********************/
@@ -216,6 +216,12 @@
 #define ADC_SAMPLING_CYCLES (6 + SAMPLING_CYCLE_CORRECTION)
 
 /******************************   ADDITIONAL FEATURES   **********************/
+
+/*  Feed-forward parameters */
+#define FEED_FORWARD_CURRENT_REG_ENABLING ENABLE
+#define CONSTANT1_Q                    37944
+#define CONSTANT1_D                    37944
+#define CONSTANT2_QD                   7525
 
 /*** On the fly start-up ***/
 
