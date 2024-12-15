@@ -6,7 +6,7 @@
 #define AS5600_STATUS_REG_ADDR 0x0B
 #define AS5600_AGC_REG_ADDR 0x1A
 #define AS5600_MAG_REG_ADDR 0x1B
-#define UPDATE_INTERVAL 10
+#define UPDATE_INTERVAL 1
 
 MagEncoder::MagEncoder()
   : i2cHandle_(nullptr), i2cAddr_((AS5600_SLAVE_ADDRESS & 0x7F) << 1),
