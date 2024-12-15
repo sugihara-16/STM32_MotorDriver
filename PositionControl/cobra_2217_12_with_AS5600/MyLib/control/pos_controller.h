@@ -1,7 +1,8 @@
 #ifndef POS_CONTROLLER_H_
 #define POS_CONTROLLER_H_
 
-#define POS_CONTROL_DUR 100 //100hz
+#define POS_CONTROL_DUR 1 //100hz
+#define MOTOR_STACK_CHECK_DUR 500 //100hz
 
 #include <cassert>
 #include <algorithm>
@@ -30,6 +31,8 @@ public:
 
   void sendTorqueCommand();
 
+  void rebootMotor();
+
 private:
   //instancesxo
   MagEncoder *mag_encoder_;
@@ -38,7 +41,13 @@ private:
   uint16_t target_p_, target_d_;
   float err_p_, err_i_, err_d_;
   float err_i_lim_;
+  uint32_t torque_lim_;
   uint32_t last_update_time_;
+  int16_t current_rmp_;
+
+  //for motor stack detection
+  uint32_t last_stack_check_time_;
+  float previous_err_p_;
 
   //variables for torque command for FOC
   int16_t target_final_torque_;
