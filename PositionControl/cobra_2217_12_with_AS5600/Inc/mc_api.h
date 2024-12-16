@@ -120,6 +120,10 @@ void MC_SetIdrefMotor1( int16_t hNewIdref );
 /* re-initializes Iq and Id references to their default values */
 void MC_Clear_IqdrefMotor1(void);
 
+ /*  only for encoder*/
+/* Start the Encoder Alignment procedure if possible. Returns false if not possible, true otherwise */
+bool MC_AlignEncoderMotor1(void);
+
 /* Acknowledge a Motor Control fault on Motor 1 */
 bool MC_AcknowledgeFaultMotor1( void );
 

@@ -415,6 +415,31 @@ __weak void MC_Clear_IqdrefMotor1(void)
 	MCI_Clear_Iqdref( pMCI[M1] );
 }
 
+ /*  only for encoder*/
+/**
+ * @brief Start the Encoder Alignment procedure for Motor 1, if possible
+ *
+ *  This command is used to trigger the encoder alignment procedure.
+ * If Motor 1's state machine is in #IDLE state, the command is immediately
+ * executed and true is returned. Otherwise, the command is discarded and false
+ * is returned.
+ *
+ * @note The MC_AlignEncoderMotor1() command only triggers the alignment procedure:
+ * It moves Motor 1's state machine from the #IDLE to the #IDLE_ALIGNMENT state and
+ * then returns. It is not blocking the Application until the motor is indeed aligned.
+ * The Application can query Motor 1's state machine to check if the alignment
+ * procedure has completed: it is the case when the state machine is back to the #IDLE
+ * state.
+ *
+ * See MC_GetSTMStateMotor1() for more details.
+ *
+ * @retval true if the command is successfully executed, false otherwise.
+ */
+__weak bool MC_AlignEncoderMotor1(void)
+{
+	return MCI_EncoderAlign( pMCI[M1] );
+}
+
 /**
  * @brief Acknowledge a Motor Control fault that occured on Motor 1
  *
