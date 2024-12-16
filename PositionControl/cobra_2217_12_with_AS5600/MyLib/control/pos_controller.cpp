@@ -1,9 +1,9 @@
 #include "pos_controller.h"
 
 PosController::PosController():
-  p_gain_(1.0f),
+  p_gain_(0.1f),
   i_gain_(0.1f),
-  d_gain_(1.0f),
+  d_gain_(0.1f),
   target_p_(2048),
   target_d_(0),
   err_i_lim_(10000.0f),
@@ -53,7 +53,7 @@ void PosController::update()
       err_p_ = target_p_ -  mag_encoder_->getAngle();
       err_i_ = std::max(err_i_ + err_p_ * dur, err_i_lim_);
       current_rmp_ = MC_GetMecSpeedAverageMotor1();
-      err_d_ = target_d_ - current_rmp_;
+      // err_d_ = target_d_ - current_rmp_;
       // target_final_torque_ = err_p_ * p_gain_ + err_i_ * i_gain_ + err_d_ * d_gain_;
       target_final_torque_ = (int16_t)(err_p_ * p_gain_ + err_d_ * d_gain_);
       sendTorqueCommand();

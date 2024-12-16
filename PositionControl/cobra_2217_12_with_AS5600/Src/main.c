@@ -185,11 +185,11 @@ int main(void)
   safetyHandle = osThreadCreate(osThread(safety), NULL);
 
   /* definition and creation of exSensorTask */
-  osThreadDef(exSensorTask, exSensorTaskCallback, osPriorityHigh, 0, 128);
+  osThreadDef(exSensorTask, exSensorTaskCallback, osPriorityNormal, 0, 128);
   exSensorTaskHandle = osThreadCreate(osThread(exSensorTask), NULL);
 
   /* definition and creation of coreTask */
-  osThreadDef(coreTask, coreTaskCallback, osPriorityRealtime, 0, 128);
+  osThreadDef(coreTask, coreTaskCallback, osPriorityNormal, 0, 128);
   coreTaskHandle = osThreadCreate(osThread(coreTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */

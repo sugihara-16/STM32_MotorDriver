@@ -42,17 +42,17 @@
                                                             variance on speed
                                                             estimates (percentage) */
 /* State observer scaling factors F1 */
-#define F1                               16384
+#define F1                               4096
 #define F2                               16384
-#define F1_LOG                           LOG2(16384)
+#define F1_LOG                           LOG2(4096)
 #define F2_LOG                           LOG2(16384)
 
 /* State observer constants */
-#define GAIN1                            -18725
-#define GAIN2                            14993
+#define GAIN1                            -1756
+#define GAIN2                            6365
 /*Only in case PLL is used, PLL gains */
-#define PLL_KP_GAIN                      1995
-#define PLL_KI_GAIN                      47
+#define PLL_KP_GAIN                      5986
+#define PLL_KI_GAIN                      423
 #define PLL_KPDIV     16384
 #define PLL_KPDIV_LOG LOG2(PLL_KPDIV)
 #define PLL_KIDIV     65535
@@ -82,7 +82,7 @@
 /**************************    DRIVE SETTINGS SECTION   **********************/
 /* PWM generation and current reading */
 
-#define PWM_FREQUENCY   30000
+#define PWM_FREQUENCY   10000
 #define PWM_FREQ_SCALING 1
 
 #define LOW_SIDE_SIGNALS_ENABLING        LS_PWM_TIMER
@@ -95,18 +95,18 @@
                                                            number of PWM cycles */
 /* Gains values for torque and flux control loops */
 #define PID_TORQUE_KP_DEFAULT         3313
-#define PID_TORQUE_KI_DEFAULT         1577
+#define PID_TORQUE_KI_DEFAULT         2366
 #define PID_TORQUE_KD_DEFAULT         100
 #define PID_FLUX_KP_DEFAULT           3313
-#define PID_FLUX_KI_DEFAULT           1577
+#define PID_FLUX_KI_DEFAULT           2366
 #define PID_FLUX_KD_DEFAULT           100
 
 /* Torque/Flux control loop gains dividers*/
 #define TF_KPDIV                      16384
-#define TF_KIDIV                      16384
+#define TF_KIDIV                      8192
 #define TF_KDDIV                      8192
 #define TF_KPDIV_LOG                  LOG2(16384)
-#define TF_KIDIV_LOG                  LOG2(16384)
+#define TF_KIDIV_LOG                  LOG2(8192)
 #define TF_KDDIV_LOG                  LOG2(8192)
 #define TFDIFFERENTIAL_TERM_ENABLING  DISABLE
 
@@ -130,14 +130,14 @@
 /* USER CODE END PID_SPEED_INTEGRAL_INIT_DIV */
 
 #define SPD_DIFFERENTIAL_TERM_ENABLING DISABLE
-#define IQMAX                          8167
+#define IQMAX                          1633
 
 /* Default settings */
 #define DEFAULT_CONTROL_MODE           STC_TORQUE_MODE /*!< STC_TORQUE_MODE or
                                                         STC_SPEED_MODE */
 #define DEFAULT_TARGET_SPEED_RPM      2533
 #define DEFAULT_TARGET_SPEED_UNIT      (DEFAULT_TARGET_SPEED_RPM*SPEED_UNIT/_RPM)
-#define DEFAULT_TORQUE_COMPONENT       2722
+#define DEFAULT_TORQUE_COMPONENT       0
 #define DEFAULT_FLUX_COMPONENT         0
 
 /**************************    FIRMWARE PROTECTIONS SECTION   *****************/
@@ -166,29 +166,29 @@
 /******************************   START-UP PARAMETERS   **********************/
 
 /* Phase 1 */
-#define PHASE1_DURATION                1000 /*milliseconds */
+#define PHASE1_DURATION                0 /*milliseconds */
 #define PHASE1_FINAL_SPEED_UNIT         (0*SPEED_UNIT/_RPM)
-#define PHASE1_FINAL_CURRENT           1089
+#define PHASE1_FINAL_CURRENT           0
 /* Phase 2 */
-#define PHASE2_DURATION                5628 /*milliseconds */
-#define PHASE2_FINAL_SPEED_UNIT         (2814*SPEED_UNIT/_RPM)
-#define PHASE2_FINAL_CURRENT           1089
+#define PHASE2_DURATION                300 /*milliseconds */
+#define PHASE2_FINAL_SPEED_UNIT         (0*SPEED_UNIT/_RPM)
+#define PHASE2_FINAL_CURRENT           816
 /* Phase 3 */
-#define PHASE3_DURATION                0 /*milliseconds */
-#define PHASE3_FINAL_SPEED_UNIT         (2814*SPEED_UNIT/_RPM)
-#define PHASE3_FINAL_CURRENT           1089
+#define PHASE3_DURATION                350 /*milliseconds */
+#define PHASE3_FINAL_SPEED_UNIT         (560*SPEED_UNIT/_RPM)
+#define PHASE3_FINAL_CURRENT           816
 /* Phase 4 */
-#define PHASE4_DURATION                0 /*milliseconds */
-#define PHASE4_FINAL_SPEED_UNIT         (2814*SPEED_UNIT/_RPM)
-#define PHASE4_FINAL_CURRENT           1089
+#define PHASE4_DURATION                2650 /*milliseconds */
+#define PHASE4_FINAL_SPEED_UNIT         (4800*SPEED_UNIT/_RPM)
+#define PHASE4_FINAL_CURRENT           816
 /* Phase 5 */
 #define PHASE5_DURATION                0 /* milliseconds */
-#define PHASE5_FINAL_SPEED_UNIT         (2814*SPEED_UNIT/_RPM)
-#define PHASE5_FINAL_CURRENT           1089
+#define PHASE5_FINAL_SPEED_UNIT         (4800*SPEED_UNIT/_RPM)
+#define PHASE5_FINAL_CURRENT           816
 
-#define ENABLE_SL_ALGO_FROM_PHASE      2
+#define ENABLE_SL_ALGO_FROM_PHASE      3
 /* Sensor-less rev-up sequence */
-#define STARTING_ANGLE_DEG             0  /*!< degrees [0...359] */
+#define STARTING_ANGLE_DEG             90  /*!< degrees [0...359] */
 /* Observer start-up output conditions  */
 #define OBS_MINIMUM_SPEED_RPM          1
 
@@ -219,9 +219,9 @@
 
 /*  Feed-forward parameters */
 #define FEED_FORWARD_CURRENT_REG_ENABLING ENABLE
-#define CONSTANT1_Q                    37944
-#define CONSTANT1_D                    37944
-#define CONSTANT2_QD                   7525
+#define CONSTANT1_Q                    12648
+#define CONSTANT1_D                    12648
+#define CONSTANT2_QD                   2508
 
 /*** On the fly start-up ***/
 
