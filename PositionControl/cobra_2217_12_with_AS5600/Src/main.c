@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "sensors/encoder/mag_encoder.h"
 #include "control/pos_controller.h"
+#include "usr/usr_encoder_speed_pos_fdbk.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
