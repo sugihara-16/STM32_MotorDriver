@@ -28,12 +28,18 @@
 		<nature>com.st.stm32cube.ide.mcu.MCURootProjectNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
+		<nature>org.eclipse.cdt.core.ccnature</nature>
 	</natures>
 	<linkedResources>
 		<link>
 			<name>GL35_servo.ioc</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/GL35_servo.ioc</locationURI>
+		</link>
+		<link>
+			<name>Application/MyLib</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/MyLib</locationURI>
 		</link>
 		<link>
 			<name>Application/User/app_freertos.c</name>
