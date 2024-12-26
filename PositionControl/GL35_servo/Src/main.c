@@ -23,9 +23,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "usr/usr_encoder_speed_pos_fdbk.h"
 /* USER CODE END Includes */
-
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
@@ -66,9 +65,10 @@ UART_HandleTypeDef huart2;
 osThreadId mediumFrequencyHandle;
 osThreadId safetyHandle;
 /* USER CODE BEGIN PV */
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 /* USER CODE END PV */
-
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
@@ -88,10 +88,11 @@ static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
 void startMediumFrequencyTask(void const * argument);
 extern void StartSafetyTask(void const * argument);
-
 static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
-
+#ifdef __cplusplus
+}
+#endif
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/

@@ -52,6 +52,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/Src/main.c</locationURI>
 		</link>
 		<link>
+			<name>Application/User/main.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Src/main.cpp</locationURI>
+		</link>
+		<link>
 			<name>Application/User/mc_api.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Src/mc_api.c</locationURI>
