@@ -1,65 +1,11 @@
-/**
-  ******************************************************************************
-  * @file    encoder_speed_pos_fdbk.c
-  * @author  Motor Control SDK Team, ST Microelectronics
-  * @brief   This file provides firmware functions that implement the following features
-  *          of the Encoder component of the Motor Control SDK:
-  *
-  *           - computes & stores average mechanical speed
-  *           - computes & stores average mechanical acceleration
-  *           - computes & stores  the instantaneous electrical speed
-  *           - calculates the rotor electrical and mechanical angle
-  *
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
-  ******************************************************************************
-  */
-
 /* Includes ------------------------------------------------------------------*/
 #include "usr_encoder_speed_pos_fdbk.h"
 
 #include "mc_type.h"
 
-/** @addtogroup MCSDK
-  * @{
-  */
+/*Mag Encoder Instance*/
+MagEncoder mag_encoder;
 
-/** @addtogroup SpeednPosFdbk
-  * @{
-  */
-
-/** @defgroup Encoder Encoder Speed & Position Feedback
-  * @brief Quadrature Encoder based Speed & Position Feedback implementation
-  *
-  * This component is used in applications controlling a motor equipped with a quadrature encoder.
-  *
-  * This component uses the output of a quadrature encoder to provide a measure of the speed and
-  * the position of the rotor of the motor.
-  *
-  * @todo Document the Encoder Speed & Position Feedback "module".
-  *
-  * @{
-  */
-
-/* Private defines -----------------------------------------------------------*/
-
-
-/**
-  * @brief  It initializes the hardware peripherals (TIMx, GPIO and NVIC)
-            required for the speed position sensor management using ENCODER
-            sensors.
-  * @param  pHandle: handler of the current instance of the encoder component
-  * @retval none
-  */
 void ENC_Init( ENCODER_Handle_t * pHandle )
 {
 
@@ -98,6 +44,9 @@ void ENC_Init( ENCODER_Handle_t * pHandle )
   {
     pHandle->DeltaCapturesBuffer[Index] = 0;
   }
+
+  /*Setup mag encoder (AS5600)*/
+  mag_encoder.init(&hi2c1);
 }
 
 /**
@@ -115,6 +64,11 @@ void ENC_Clear( ENCODER_Handle_t * pHandle )
     pHandle->DeltaCapturesBuffer[Index] = 0;
   }
   pHandle->SensorIsReliable = true;
+}
+
+void ENC_updateMagEncoder( ENCODER_Handle_t * pHandle)
+{
+  mag_encoder.update();
 }
 
 /**
@@ -287,7 +241,7 @@ bool ENC_CalcAvrgMecSpeedUnit( ENCODER_Handle_t * pHandle, int16_t * pMecSpeedUn
   {
     bReliability = SPD_IsMecSpeedReliable( &pHandle->_Super, pMecSpeedUnit );
   }
-
+  // mag_encoder.update();
   return ( bReliability );
 }
 
