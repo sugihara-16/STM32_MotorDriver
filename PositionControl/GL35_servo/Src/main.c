@@ -23,11 +23,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "usr/usr_encoder_speed_pos_fdbk.h"
 /* USER CODE END Includes */
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+#include "usr/usr_encoder_speed_pos_fdbk.h"
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
