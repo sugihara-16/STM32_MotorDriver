@@ -13,6 +13,7 @@ MagEncoder::MagEncoder()
     angle_(0), rawAngle_(0), magneticMagnitude_(0), agc_(0), magnetDetected_(false) {}
 
 HAL_StatusTypeDef MagEncoder::init(I2C_HandleTypeDef *i2cHandle) {
+  // i2cAddr_ = (AS5600_SLAVE_ADDRESS & 0x7F) << 1;
   i2cHandle_ = i2cHandle;
   last_time_ = HAL_GetTick() + 6000; // after 6s
   device_id_ = 128;
@@ -23,11 +24,11 @@ HAL_StatusTypeDef MagEncoder::update() {
   uint32_t now_time = HAL_GetTick();
   if(now_time <= last_time_ + UPDATE_INTERVAL) return HAL_OK;
   last_time_ = now_time;
-  for (uint16_t i = 1; i < 128; i++) {
-    if (HAL_I2C_IsDeviceReady(i2cHandle_, i << 1, 1, 10) == HAL_OK) {
-      device_id_ = i;
-    }
-  }
+  // for (uint16_t i = 1; i < 128; i++) {
+  //   if (HAL_I2C_IsDeviceReady(i2cHandle_, i << 1, 1, 10) == HAL_OK) {
+  //     device_id_ = i;
+  //   }
+  // }
   uint8_t data[2] = {0};
  
   // RAW ANGLE

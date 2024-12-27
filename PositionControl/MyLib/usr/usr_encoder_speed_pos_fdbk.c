@@ -4,7 +4,7 @@
 #include "mc_type.h"
 
 /*Mag Encoder Instance*/
-MagEncoder mag_encoder;
+MagEncoderCwrap* mag_encoder = NULL;
 
 void ENC_Init( ENCODER_Handle_t * pHandle )
 {
@@ -46,7 +46,9 @@ void ENC_Init( ENCODER_Handle_t * pHandle )
   }
 
   /*Setup mag encoder (AS5600)*/
-  mag_encoder.init(&hi2c1);
+  mag_encoder = create_encoder();
+  HAL_Delay(10);
+  MagCwrap_Init(mag_encoder,&hi2c1);
 }
 
 /**
@@ -68,7 +70,7 @@ void ENC_Clear( ENCODER_Handle_t * pHandle )
 
 void ENC_updateMagEncoder( ENCODER_Handle_t * pHandle)
 {
-  mag_encoder.update();
+  /* mag_encoder.update(); */
 }
 
 /**
@@ -242,6 +244,7 @@ bool ENC_CalcAvrgMecSpeedUnit( ENCODER_Handle_t * pHandle, int16_t * pMecSpeedUn
     bReliability = SPD_IsMecSpeedReliable( &pHandle->_Super, pMecSpeedUnit );
   }
   // mag_encoder.update();
+  MagCwrap_Update(mag_encoder);
   return ( bReliability );
 }
 
