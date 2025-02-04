@@ -1,49 +1,57 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usr_encoder_speed_pos_fdbk.h"
-
 #include "mc_type.h"
 
 /*Mag Encoder Instance*/
 MagEncoderCwrap* mag_encoder = NULL;
 
-void ENC_Init( ENCODER_Handle_t * pHandle )
+__weak void ENC_Init(ENCODER_Handle_t *pHandle)
 {
-
-  TIM_TypeDef * TIMx = pHandle->TIMx;
-  uint8_t BufferSize;
-  uint8_t Index;
-
+#ifdef NULL_PTR_CHECK_ENC_SPD_POS_FDB
+  if (NULL == pHandle)
+  {
+    /* Nothing to do */
+  }
+  else
+  {
+#endif
+    TIM_TypeDef *TIMx = pHandle->TIMx;
+    uint8_t bufferSize;
+    uint8_t index;
 
 #ifdef TIM_CNT_UIFCPY
-  LL_TIM_EnableUIFRemap ( TIMx );
+    LL_TIM_EnableUIFRemap(TIMx);
 #define ENC_MAX_OVERFLOW_NB     ((uint16_t)2048) /* 2^11*/
 #else
 #define ENC_MAX_OVERFLOW_NB     (1)
 #endif
-  /* Reset counter */
-  LL_TIM_SetCounter ( TIMx, 0 );
+    /* Reset counter */
+    LL_TIM_SetCounter(TIMx, 0);
 
-  /*Calculations of convenience*/
-  pHandle->U32MAXdivPulseNumber = UINT32_MAX / ( uint32_t )( pHandle->PulseNumber );
-  pHandle->SpeedSamplingFreqUnit = pHandle->SpeedSamplingFreqHz * SPEED_UNIT;
+    /*Calculations of convenience*/
+    pHandle->U32MAXdivPulseNumber = UINT32_MAX / ((uint32_t) pHandle->PulseNumber);
+    pHandle->SpeedSamplingFreqUnit = ((uint32_t)pHandle->SpeedSamplingFreqHz * (uint32_t)SPEED_UNIT);
 
-  /* Set IC filter for both channel 1 & 2*/
-  LL_TIM_IC_SetFilter(TIMx, LL_TIM_CHANNEL_CH1, ( uint32_t )(pHandle->ICx_Filter << 20));
-  LL_TIM_IC_SetFilter(TIMx, LL_TIM_CHANNEL_CH2, ( uint32_t )(pHandle->ICx_Filter << 20));
+    /* Set IC filter for both channel 1 & 2 */
+    LL_TIM_IC_SetFilter(TIMx, LL_TIM_CHANNEL_CH1, ((uint32_t)pHandle->ICx_Filter));
+    LL_TIM_IC_SetFilter(TIMx, LL_TIM_CHANNEL_CH2, ((uint32_t)pHandle->ICx_Filter));
 
-  LL_TIM_ClearFlag_UPDATE ( TIMx );
-  LL_TIM_EnableIT_UPDATE ( TIMx );
+    LL_TIM_ClearFlag_UPDATE(TIMx);
+    LL_TIM_EnableIT_UPDATE(TIMx);
 
-  /* Enable the counting timer*/
-  LL_TIM_EnableCounter ( TIMx );
+    /* Enable the counting timer */
+    LL_TIM_EnableCounter(TIMx);
 
-  /* Erase speed buffer */
-  BufferSize = pHandle->SpeedBufferSize;
+    /* Erase speed buffer */
+    bufferSize = pHandle->SpeedBufferSize;
 
-  for ( Index = 0u; Index < BufferSize; Index++ )
-  {
-    pHandle->DeltaCapturesBuffer[Index] = 0;
+    for (index = 0U; index < bufferSize; index++)
+    {
+      pHandle->DeltaCapturesBuffer[index] = 0;
+    }
+#ifdef NULL_PTR_CHECK_ENC_SPD_POS_FDB
   }
+#endif
 
   /*Setup mag encoder (AS5600)*/
   mag_encoder = create_encoder();
@@ -52,250 +60,304 @@ void ENC_Init( ENCODER_Handle_t * pHandle )
 }
 
 /**
-* @brief  Clear software FIFO where are "pushed" rotor angle variations captured
-*         This function must be called before starting the motor to initialize
-*         the speed measurement process.
-* @param  pHandle: handler of the current instance of the encoder component
-* @retval none
-*/
-void ENC_Clear( ENCODER_Handle_t * pHandle )
+  * @brief  Clear software FIFO where the captured rotor angle variations are stored.
+  *         This function must be called before starting the motor to initialize
+  *         the speed measurement process.
+  * @param  pHandle: handler of the current instance of the encoder component
+  */
+__weak void ENC_Clear(ENCODER_Handle_t *pHandle)
 {
-  uint8_t Index;
-  for ( Index = 0u; Index < pHandle->SpeedBufferSize; Index++ )
+#ifdef NULL_PTR_CHECK_ENC_SPD_POS_FDB
+  if (NULL == pHandle)
   {
-    pHandle->DeltaCapturesBuffer[Index] = 0;
+    /* Nothing to do */
   }
-  pHandle->SensorIsReliable = true;
-}
+  else
+  {
+#endif
+    uint8_t index;
 
-void ENC_updateMagEncoder( ENCODER_Handle_t * pHandle)
-{
-  /* mag_encoder.update(); */
+    for (index = 0u; index < pHandle->SpeedBufferSize; index++)
+    {
+      pHandle->DeltaCapturesBuffer[index] = 0;
+    }
+    pHandle->SensorIsReliable = true;
+#ifdef NULL_PTR_CHECK_ENC_SPD_POS_FDB
+  }
+#endif
 }
 
 /**
-* @brief  It calculates the rotor electrical and mechanical angle, on the basis
-*         of the instantaneous value of the timer counter.
-* @param  pHandle: handler of the current instance of the encoder component
-* @retval int16_t Measured electrical angle in s16degree format.
-*/
-int16_t ENC_CalcAngle( ENCODER_Handle_t * pHandle )
+  * @brief  It calculates the rotor electrical and mechanical angle, on the basis
+  *         of the instantaneous value of the timer counter.
+  * @param  pHandle: handler of the current instance of the encoder component
+  * @retval Measured electrical angle in [s16degree](measurement_units.md) format.
+  */
+__weak int16_t ENC_CalcAngle(ENCODER_Handle_t *pHandle)
 {
-  int32_t wtemp1;
   int16_t elAngle;  /* s16degree format */
-  int16_t mecAngle; /* s16degree format */
-  /* PR 52926 We need to keep only the 16 LSB, bit 31 could be at 1 
-   if the overflow occurs just after the entry in the High frequency task */
-  wtemp1 = ( int32_t )( LL_TIM_GetCounter( pHandle->TIMx ) & 0xffff ) *
-           ( int32_t )( pHandle->U32MAXdivPulseNumber );
+#ifdef NULL_PTR_CHECK_ENC_SPD_POS_FDB
+  if (NULL == pHandle)
+  {
+    elAngle = 0;
+  }
+  else
+  {
+#endif
+    int16_t mecAngle; /* s16degree format */
+    uint32_t uwtemp1;
+    int32_t wtemp1;
+    /* PR 52926 We need to keep only the 16 LSB, bit 31 could be at 1
+     if the overflow occurs just after the entry in the High frequency task */
+    uwtemp1 = (LL_TIM_GetCounter(pHandle->TIMx) & 0x7fffffffU) * (pHandle->U32MAXdivPulseNumber);
+#ifndef FULL_MISRA_C_COMPLIANCY_ENC_SPD_POS
+    wtemp1 = (int32_t)uwtemp1 >> 16U;  //cstat !MISRAC2012-Rule-1.3_n !ATH-shift-neg !MISRAC2012-Rule-10.1_R6
+#else
+    wtemp1 = (int32_t)uwtemp1 / 65536;
+#endif
+    /* Computes and stores the rotor mechanical angle */
+    mecAngle = (int16_t)wtemp1;
 
-  /*Computes and stores the rotor mechanical angle*/
-  mecAngle = ( int16_t )( wtemp1 / 65536 );
+    int16_t hMecAnglePrev = pHandle->_Super.hMecAngle;
 
-  int16_t hMecAnglePrev = pHandle->_Super.hMecAngle;
+    pHandle->_Super.hMecAngle = mecAngle;
 
-  pHandle->_Super.hMecAngle = mecAngle;
-  
-  /*Computes and stores the rotor electrical angle*/
-  elAngle = mecAngle * pHandle->_Super.bElToMecRatio;
+    /* Computes and stores the rotor electrical angle */
+    elAngle = mecAngle * (int16_t)(pHandle->_Super.bElToMecRatio);
 
-  pHandle->_Super.hElAngle = elAngle;
-  
-  int16_t hMecSpeedDpp = mecAngle - hMecAnglePrev;
-  pHandle->_Super.wMecAngle += (int32_t)(hMecSpeedDpp);
+    pHandle->_Super.hElAngle = elAngle;
 
+    int16_t hMecSpeedDpp = mecAngle - hMecAnglePrev;
+    pHandle->_Super.wMecAngle += ((int32_t)hMecSpeedDpp);
+#ifdef NULL_PTR_CHECK_ENC_SPD_POS_FDB
+  }
+#endif
   /*Returns rotor electrical angle*/
-  return ( elAngle );
+  return (elAngle);
 }
 
 /**
   * @brief  This method must be called with the periodicity defined by parameter
-  *         hSpeedSamplingFreqUnit. The method generates a capture event on
-  *         a channel, computes & stores average mechanical speed [expressed in the unit
-  *         defined by #SPEED_UNIT] (on the basis of the buffer filled by CCx IRQ),
-  *         computes & stores average mechanical acceleration [#SPEED_UNIT/SpeedSamplingFreq],
-  *         computes & stores the instantaneous electrical speed [dpp], updates the index of the
-  *         speed buffer, then checks & stores & returns the reliability state
+  *         SpeedSamplingFreqUnit. The method generates a capture event on
+  *         a channel, computes and stores average mechanical speed expressed in the unit
+  *         defined by #SPEED_UNIT (on the basis of the buffer filled by Medium Frequency Task),
+  *         computes and stores average mechanical acceleration expressed in #SPEED_UNIT/SpeedSamplingFreq,
+  *         computes and stores the instantaneous electrical speed in Digit Per control Period
+  *         unit [dpp](measurement_units.md), updates the index of the
+  *         speed buffer, then checks, stores and returns the reliability state
   *         of the sensor.
   * @param  pHandle: handler of the current instance of the encoder component
   * @param  pMecSpeedUnit pointer used to return the rotor average mechanical speed
-  *         (expressed in the unit defined by #SPEED_UNIT)
-  * @retval true = sensor information is reliable
-  *         false = sensor information is not reliable
+  *         expressed in the unit defined by #SPEED_UNIT
+  * @retval true = sensor information is reliable. false = sensor information is not reliable
   */
-bool ENC_CalcAvrgMecSpeedUnit( ENCODER_Handle_t * pHandle, int16_t * pMecSpeedUnit )
+__weak bool ENC_CalcAvrgMecSpeedUnit(ENCODER_Handle_t *pHandle, int16_t *pMecSpeedUnit)
 {
-  TIM_TypeDef * TIMx = pHandle->TIMx;
-  int32_t wOverallAngleVariation = 0;
-  int32_t wtemp1;
-  int32_t wtemp2;
-  uint8_t bBufferIndex = 0u;
-  bool bReliability = true;
-  uint8_t bBufferSize = pHandle->SpeedBufferSize;
-  uint32_t OverflowCntSample;
-  uint32_t CntCapture;
-  uint32_t directionSample;
-  uint8_t OFbit = 0;
-
-#ifdef TIM_CNT_UIFCPY
-  /* disable Interrupt generation */
-  LL_TIM_DisableIT_UPDATE ( TIMx );
-#endif
-  CntCapture =  LL_TIM_GetCounter ( TIMx );
-  OverflowCntSample = pHandle->TimerOverflowNb;
-  pHandle->TimerOverflowNb = 0;
-  directionSample =  LL_TIM_GetDirection( TIMx );
-#ifdef TIM_CNT_UIFCPY
-  OFbit = __LL_TIM_GETFLAG_UIFCPY( CntCapture );
-  if ( OFbit )
-  {
-    /* If OFbit is set, overflow has occured since IT has been disabled.
-    We have to take this overflow into account in the angle computation,
-    but we must not take it into account a second time in the accmulator,
-    so we have to clear the pending flag. If the OFbit is not set, it does not mean
-    that an Interrupt has not occured since the last read, but it has not been taken
-    into accout, we must not clear the interrupt in order to accumulate it */
-    LL_TIM_ClearFlag_UPDATE( TIMx );
-  }
-  LL_TIM_EnableIT_UPDATE ( TIMx );
-  CLEAR_BIT( CntCapture, TIM_CNT_UIFCPY );
-#endif
-  /* If UIFCPY is not present, OverflowCntSample can not be used safely for
-  speed computation, but we still use it to check that we do not exceed one overflow
-  (sample frequency not less than mechanical motor speed */
-  if ( ( OverflowCntSample + OFbit ) > ENC_MAX_OVERFLOW_NB )
-  {
-    pHandle->TimerOverflowError = true;
-  }
-
-  /*Calculation of delta angle*/
-  if ( directionSample == LL_TIM_COUNTERDIRECTION_DOWN )
-  {
-    /* encoder timer down-counting*/
-    /* if UIFCPY not present Overflow counter can not be safely used -> limitation to 1 OF. */
-#ifndef TIM_CNT_UIFCPY
-    OverflowCntSample = ( CntCapture > pHandle->PreviousCapture ) ? 1 : 0;
-#endif
-    pHandle->DeltaCapturesBuffer[pHandle->DeltaCapturesIndex] =
-      ( int32_t )( CntCapture ) - ( int32_t )( pHandle->PreviousCapture ) -
-      ( ( int32_t )( OverflowCntSample ) + OFbit ) * ( int32_t )( pHandle->PulseNumber );
-  }
-  else
-  {
-    /* encoder timer up-counting*/
-    /* if UIFCPY not present Overflow counter can not be safely used -> limitation to 1 OF. */
-#ifndef TIM_CNT_UIFCPY
-    OverflowCntSample = ( CntCapture < pHandle->PreviousCapture ) ? 1 : 0;
-#endif
-    pHandle->DeltaCapturesBuffer[pHandle->DeltaCapturesIndex] =
-      ( int32_t )( CntCapture ) - ( int32_t )( pHandle->PreviousCapture ) +
-      ( ( int32_t )( OverflowCntSample ) + OFbit ) * ( int32_t )( pHandle->PulseNumber );
-  }
-
-
-  /*Computes & returns average mechanical speed */
-  for ( bBufferIndex = 0u; bBufferIndex < bBufferSize; bBufferIndex++ )
-  {
-    wOverallAngleVariation += pHandle->DeltaCapturesBuffer[bBufferIndex];
-  }
-  wtemp1 = wOverallAngleVariation * ( int32_t )( pHandle->SpeedSamplingFreqUnit );
-  wtemp2 = ( int32_t )( pHandle->PulseNumber ) *
-           ( int32_t )( pHandle->SpeedBufferSize );
-  wtemp1 /= wtemp2;
-  *pMecSpeedUnit = ( int16_t )( wtemp1 );
-
-  /*Computes & stores average mechanical acceleration */
-  pHandle->_Super.hMecAccelUnitP = ( int16_t )( wtemp1 -
-                                   pHandle->_Super.hAvrMecSpeedUnit );
-
-  /*Stores average mechanical speed */
-  pHandle->_Super.hAvrMecSpeedUnit = ( int16_t )wtemp1;
-
-  /*Computes & stores the instantaneous electrical speed [dpp], var wtemp1*/
-  wtemp1 = pHandle->DeltaCapturesBuffer[pHandle->DeltaCapturesIndex] *
-           ( int32_t )( pHandle->SpeedSamplingFreqHz ) *
-           ( int32_t )pHandle->_Super.bElToMecRatio;
-  wtemp1 /= ( int32_t )( pHandle->PulseNumber );
-  wtemp1 *= ( int32_t )( pHandle->_Super.DPPConvFactor);
-  wtemp1 /= ( int32_t )( pHandle->_Super.hMeasurementFrequency );
-
-  pHandle->_Super.hElSpeedDpp = ( int16_t )wtemp1;
-
-  /*last captured value update*/
-  pHandle->PreviousCapture = CntCapture;
-  /*Buffer index update*/
-  pHandle->DeltaCapturesIndex++;
-
-  if ( pHandle->DeltaCapturesIndex >= pHandle->SpeedBufferSize )
-  {
-    pHandle->DeltaCapturesIndex = 0u;
-  }
-
-  /*Checks the reliability status, then stores and returns it*/
-  if ( pHandle->TimerOverflowError )
+  bool bReliability;
+#ifdef NULL_PTR_CHECK_ENC_SPD_POS_FDB
+  if ((NULL == pHandle) || (NULL == pMecSpeedUnit))
   {
     bReliability = false;
-    pHandle->SensorIsReliable = false;
-    pHandle->_Super.bSpeedErrorNumber = pHandle->_Super.bMaximumSpeedErrorsNumber;
-
   }
   else
   {
-    bReliability = SPD_IsMecSpeedReliable( &pHandle->_Super, pMecSpeedUnit );
+#endif
+    int32_t wtemp1;
+    int32_t wtemp2;
+    uint32_t OverflowCntSample;
+    uint32_t CntCapture;
+    uint32_t directionSample;
+    int32_t wOverallAngleVariation = 0;
+    TIM_TypeDef *TIMx = pHandle->TIMx;
+    uint8_t bBufferSize = pHandle->SpeedBufferSize;
+    uint8_t bBufferIndex;
+#ifdef TIM_CNT_UIFCPY
+    uint8_t OFbit;
+#else
+    uint8_t OFbit = 0U;
+#endif
+
+#ifdef TIM_CNT_UIFCPY
+    /* disable Interrupt generation */
+    LL_TIM_DisableIT_UPDATE(TIMx);
+#endif
+    CntCapture = LL_TIM_GetCounter(TIMx);
+    OverflowCntSample = pHandle->TimerOverflowNb;
+    pHandle->TimerOverflowNb = 0;
+    directionSample = LL_TIM_GetDirection(TIMx);
+#ifdef TIM_CNT_UIFCPY
+    OFbit = __LL_TIM_GETFLAG_UIFCPY(CntCapture);
+    if (0U == OFbit)
+    {
+      /* Nothing to do */
+    }
+    else
+    {
+      /* If OFbit is set, overflow has occured since IT has been disabled.
+      We have to take this overflow into account in the angle computation,
+      but we must not take it into account a second time in the accmulator,
+      so we have to clear the pending flag. If the OFbit is not set, it does not mean
+      that an Interrupt has not occured since the last read, but it has not been taken
+      into accout, we must not clear the interrupt in order to accumulate it */
+      LL_TIM_ClearFlag_UPDATE(TIMx);
+    }
+
+    LL_TIM_EnableIT_UPDATE(TIMx);
+    CLEAR_BIT(CntCapture, TIM_CNT_UIFCPY);
+#endif
+
+    /* If UIFCPY is not present, OverflowCntSample can not be used safely for
+    speed computation, but we still use it to check that we do not exceed one overflow
+    (sample frequency not less than mechanical motor speed */
+
+    if ((OverflowCntSample + OFbit) > ENC_MAX_OVERFLOW_NB)
+    {
+      pHandle->TimerOverflowError = true;
+    }
+    else
+    {
+      /* Nothing to do */
+    }
+
+    /* Calculation of delta angle */
+    if (LL_TIM_COUNTERDIRECTION_DOWN == directionSample)
+    {
+      /* Encoder timer down-counting */
+      /* If UIFCPY not present Overflow counter can not be safely used -> limitation to 1 OF */
+#ifndef TIM_CNT_UIFCPY
+      OverflowCntSample = (CntCapture > pHandle->PreviousCapture) ? 1 : 0;
+#endif
+      pHandle->DeltaCapturesBuffer[pHandle->DeltaCapturesIndex] =
+        ((int32_t)CntCapture) - ((int32_t)pHandle->PreviousCapture)
+        - ((((int32_t)OverflowCntSample) + (int32_t)OFbit) * ((int32_t)pHandle->PulseNumber));
+    }
+    else
+    {
+      /* Encoder timer up-counting */
+      /* If UIFCPY not present Overflow counter can not be safely used -> limitation to 1 OF */
+#ifndef TIM_CNT_UIFCPY
+      OverflowCntSample = (CntCapture < pHandle->PreviousCapture) ? 1 : 0;
+#endif
+      pHandle->DeltaCapturesBuffer[pHandle->DeltaCapturesIndex] =
+        ((int32_t)CntCapture) - ((int32_t)pHandle->PreviousCapture)
+        + ((((int32_t)OverflowCntSample) + (int32_t)OFbit) * ((int32_t)pHandle->PulseNumber));
+    }
+
+
+    /* Computes & returns average mechanical speed */
+    for (bBufferIndex = 0U; bBufferIndex < bBufferSize; bBufferIndex++)
+    {
+      wOverallAngleVariation += pHandle->DeltaCapturesBuffer[bBufferIndex];
+    }
+    wtemp1 = wOverallAngleVariation * ((int32_t)pHandle->SpeedSamplingFreqUnit);
+    wtemp2 = ((int32_t)pHandle->PulseNumber) * ((int32_t)pHandle->SpeedBufferSize);
+    wtemp1 = ((0 == wtemp2) ? wtemp1 : (wtemp1 / wtemp2));
+
+    *pMecSpeedUnit = (int16_t)wtemp1;
+
+    /* Computes & stores average mechanical acceleration */
+    pHandle->_Super.hMecAccelUnitP = (int16_t)(wtemp1 - pHandle->_Super.hAvrMecSpeedUnit);
+
+    /* Stores average mechanical speed */
+    pHandle->_Super.hAvrMecSpeedUnit = (int16_t)wtemp1;
+
+    /* Computes & stores the instantaneous electrical speed [dpp], var wtemp1 */
+    wtemp1 = pHandle->DeltaCapturesBuffer[pHandle->DeltaCapturesIndex] * ((int32_t)pHandle->SpeedSamplingFreqHz)
+             * ((int32_t)pHandle->_Super.bElToMecRatio);
+    wtemp1 /= ((int32_t)pHandle->PulseNumber);
+    wtemp1 *= ((int32_t)pHandle->_Super.DPPConvFactor);
+    wtemp1 /= ((int32_t)pHandle->_Super.hMeasurementFrequency);
+
+    pHandle->_Super.hElSpeedDpp = (int16_t)wtemp1;
+
+    /* Last captured value update */
+    pHandle->PreviousCapture = (CntCapture >= (uint32_t)(pHandle->PulseNumber-1)) ? (pHandle->PulseNumber-1) : (uint32_t)CntCapture;
+    /*Buffer index update*/
+    pHandle->DeltaCapturesIndex++;
+
+    if (pHandle->DeltaCapturesIndex >= pHandle->SpeedBufferSize)
+    {
+      pHandle->DeltaCapturesIndex = 0U;
+    }
+    else
+    {
+      /* Nothing to do */
+    }
+
+    /* Checks the reliability status, then stores and returns it */
+    if (pHandle->TimerOverflowError)
+    {
+      bReliability = false;
+      pHandle->SensorIsReliable = false;
+      pHandle->_Super.bSpeedErrorNumber = pHandle->_Super.bMaximumSpeedErrorsNumber;
+    }
+    else
+    {
+      bReliability = SPD_IsMecSpeedReliable(&pHandle->_Super, pMecSpeedUnit);
+    }
+#ifdef NULL_PTR_CHECK_ENC_SPD_POS_FDB
   }
+#endif
   // mag_encoder.update();
   MagCwrap_Update(mag_encoder);
-  return ( bReliability );
+  return (bReliability);
 }
 
 /**
   * @brief  It set instantaneous rotor mechanical angle.
-  *         As a consequence, timer counted is computed and updated.
+  *         As a consequence, timer counter is computed and updated.
   * @param  pHandle: handler of the current instance of the encoder component
-  * @param  hMecAngle new value of rotor mechanical angle (s16degrees)
-  * @retval none
+  * @param  hMecAngle new value of rotor mechanical angle in [s16degree](measurement_units.md) format.
   */
-void ENC_SetMecAngle( ENCODER_Handle_t * pHandle, int16_t hMecAngle )
+__weak void ENC_SetMecAngle(ENCODER_Handle_t *pHandle, int16_t hMecAngle)
 {
-  TIM_TypeDef * TIMx = pHandle->TIMx;
-
-  uint16_t hAngleCounts;
-  uint16_t hMecAngleuint;
-
-  pHandle->_Super.hMecAngle = hMecAngle;
-  pHandle->_Super.hElAngle = hMecAngle * pHandle->_Super.bElToMecRatio;
-  if ( hMecAngle < 0 )
+#ifdef NULL_PTR_CHECK_ENC_SPD_POS_FDB
+  if (NULL == pHandle)
   {
-    hMecAngle *= -1;
-    hMecAngleuint = 65535u - ( uint16_t )hMecAngle;
+    /* Nothing to do */
   }
   else
   {
-    hMecAngleuint = ( uint16_t )hMecAngle;
+#endif
+    TIM_TypeDef *TIMx = pHandle->TIMx;
+
+    uint32_t hAngleCounts;
+    uint16_t hMecAngleuint;
+    int16_t localhMecAngle = hMecAngle;
+
+    pHandle->_Super.hMecAngle = localhMecAngle;
+    pHandle->_Super.hElAngle = localhMecAngle * (int16_t)pHandle->_Super.bElToMecRatio;
+    if (localhMecAngle < 0)
+    {
+      localhMecAngle *= -1;
+      hMecAngleuint = ((uint16_t)65535 - ((uint16_t)localhMecAngle));
+    }
+    else
+    {
+      hMecAngleuint = (uint16_t)localhMecAngle;
+    }
+
+    hAngleCounts = (uint32_t)((((uint32_t)hMecAngleuint) * ((uint32_t)pHandle->PulseNumber)) / 65535U);
+
+    TIMx->CNT = (uint32_t)hAngleCounts;
+#ifdef NULL_PTR_CHECK_ENC_SPD_POS_FDB
   }
-
-  hAngleCounts = ( uint16_t )( ( ( uint32_t )hMecAngleuint *
-                                 ( uint32_t )pHandle->PulseNumber ) / 65535u );
-
-  TIMx->CNT = ( uint16_t )( hAngleCounts );
-  
+#endif
 }
 
 /**
-  * @brief  IRQ implementation of the TIMER ENCODER
-  * @param  pHandle: handler of the current instance of the encoder component
-  * @param  flag used to distinguish between various IRQ sources
-  * @retval none
+  * @brief  TIMER ENCODER Overflow interrupt counter update
+  * @param  pHandleVoid: handler of the current instance of the encoder component
   */
-void * ENC_IRQHandler( void * pHandleVoid )
+__weak void *ENC_IRQHandler(void *pHandleVoid)
 {
-  ENCODER_Handle_t * pHandle = ( ENCODER_Handle_t * ) pHandleVoid;
+  ENCODER_Handle_t *pHandle = (ENCODER_Handle_t *)pHandleVoid; //cstat !MISRAC2012-Rule-11.5
 
-  /*Updates the number of overflows occurred*/
-  /* the handling of overflow error is done in ENC_CalcAvrgMecSpeedUnit */
-  pHandle->TimerOverflowNb += 1u;
+  /* Updates the number of overflows occurred */
+  /* The handling of overflow error is done in ENC_CalcAvrgMecSpeedUnit */
+  pHandle->TimerOverflowNb += 1U;
 
-  return MC_NULL;
+  return (MC_NULL);
 }
 /**
   * @}
@@ -308,4 +370,4 @@ void * ENC_IRQHandler( void * pHandleVoid )
 /** @} */
 
 
-/******************* (C) COPYRIGHT 2019 STMicroelectronics *****END OF FILE****/
+/******************* (C) COPYRIGHT 2024 STMicroelectronics *****END OF FILE****/
