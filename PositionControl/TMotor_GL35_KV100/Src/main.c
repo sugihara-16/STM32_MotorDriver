@@ -60,6 +60,7 @@ DMA_HandleTypeDef hdma_usart2_tx;
 
 osThreadId mediumFrequencyHandle;
 osThreadId safetyHandle;
+osThreadId exSensorUpdateHandle;
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -79,6 +80,7 @@ static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
 void startMediumFrequencyTask(void const * argument);
 extern void StartSafetyTask(void const * argument);
+void exSensorUpdateTask(void const * argument);
 
 static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
@@ -160,6 +162,10 @@ int main(void)
   /* definition and creation of safety */
   osThreadDef(safety, StartSafetyTask, osPriorityAboveNormal, 0, 128);
   safetyHandle = osThreadCreate(osThread(safety), NULL);
+
+  /* definition and creation of exSensorUpdate */
+  osThreadDef(exSensorUpdate, exSensorUpdateTask, osPriorityRealtime, 0, 128);
+  exSensorUpdateHandle = osThreadCreate(osThread(exSensorUpdate), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -809,6 +815,24 @@ __weak void startMediumFrequencyTask(void const * argument)
     osDelay(1);
   }
   /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_exSensorUpdateTask */
+/**
+* @brief Function implementing the exSensorUpdate thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_exSensorUpdateTask */
+__weak void exSensorUpdateTask(void const * argument)
+{
+  /* USER CODE BEGIN exSensorUpdateTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END exSensorUpdateTask */
 }
 
 /**

@@ -12,5 +12,6 @@ void ENC_Clear(ENCODER_Handle_t *pHandle);
 int16_t ENC_CalcAngle(ENCODER_Handle_t *pHandle);
 bool ENC_CalcAvrgMecSpeedUnit(ENCODER_Handle_t *pHandle, int16_t *pMecSpeedUnit);
 void ENC_SetMecAngle(ENCODER_Handle_t *pHandle, int16_t hMecAngle);
+int16_t ENC_magUpdate(ENCODER_Handle_t *pHandle);
 
 #endif
