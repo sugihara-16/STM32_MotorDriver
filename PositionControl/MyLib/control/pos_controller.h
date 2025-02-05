@@ -53,7 +53,7 @@ private:
   int16_t target_final_torque_;
   uint16_t torque_reach_dur_;
 
-  State_t motor_state_;
+  MCI_State_t motor_state_;
   uint16_t motor_crr_fault_code_;
   uint16_t motor_past_fault_code_;
 
