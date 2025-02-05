@@ -24,4 +24,12 @@ extern "C" {
       mag_wrapper->encoder->update();
     }
   }
+
+  uint16_t MagCwrap_GetAngle(MagEncoderCwrap* mag_wrapper) {
+    uint16_t angle;
+    if (mag_wrapper && mag_wrapper->encoder) {      
+      angle = mag_wrapper->encoder->getAngle();
+    }
+    return angle;
+  }
 }
