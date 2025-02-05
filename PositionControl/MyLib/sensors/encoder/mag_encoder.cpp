@@ -22,7 +22,7 @@ HAL_StatusTypeDef MagEncoder::init(I2C_HandleTypeDef *i2cHandle) {
 
 HAL_StatusTypeDef MagEncoder::update() {
   uint32_t now_time = HAL_GetTick();
-  if(now_time <= last_time_ + UPDATE_INTERVAL) return HAL_OK;
+  // if(now_time <= last_time_ + UPDATE_INTERVAL) return HAL_OK;
   last_time_ = now_time;
   // for (uint16_t i = 1; i < 128; i++) {
   //   if (HAL_I2C_IsDeviceReady(i2cHandle_, i << 1, 1, 10) == HAL_OK) {
