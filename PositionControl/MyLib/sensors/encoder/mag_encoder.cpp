@@ -1,63 +1,66 @@
 #include "mag_encoder.h"
 
-#define AS5600_SLAVE_ADDRESS 0x36
-#define AS5600_RAWANGLE_REG_ADDR 0x0C
-#define AS5600_ANGLE_REG_ADDR 0x0E
-#define AS5600_STATUS_REG_ADDR 0x0B
-#define AS5600_AGC_REG_ADDR 0x1A
-#define AS5600_MAG_REG_ADDR 0x1B
-#define UPDATE_INTERVAL 1
-
-MagEncoder::MagEncoder()
-  : i2cHandle_(nullptr), i2cAddr_((AS5600_SLAVE_ADDRESS & 0x7F) << 1),
-    angle_(0), rawAngle_(0), magneticMagnitude_(0), agc_(0), magnetDetected_(false) {}
+MagEncoder::MagEncoder() 
+  : i2cHandle_(nullptr),
+    i2cAddr_((AS5600_SLAVE_ADDRESS & 0x7F) << 1),
+    angle_(0), rawAngle_(0), magneticMagnitude_(0),
+    agc_(0), magnetDetected_(false), last_time_(0), device_id_(0),
+    dmaState_(DMA_IDLE)
+{
+}
 
 HAL_StatusTypeDef MagEncoder::init(I2C_HandleTypeDef *i2cHandle) {
-  // i2cAddr_ = (AS5600_SLAVE_ADDRESS & 0x7F) << 1;
   i2cHandle_ = i2cHandle;
-  last_time_ = HAL_GetTick() + 6000; // after 6s
+  last_time_ = HAL_GetTick() + 6000;
   device_id_ = 128;
+  dmaState_ = DMA_IDLE;
   return HAL_OK;
 }
 
 HAL_StatusTypeDef MagEncoder::update() {
-  uint32_t now_time = HAL_GetTick();
-  // if(now_time <= last_time_ + UPDATE_INTERVAL) return HAL_OK;
-  last_time_ = now_time;
-  // for (uint16_t i = 1; i < 128; i++) {
-  //   if (HAL_I2C_IsDeviceReady(i2cHandle_, i << 1, 1, 10) == HAL_OK) {
-  //     device_id_ = i;
-  //   }
-  // }
-  uint8_t data[2] = {0};
- 
-  // RAW ANGLE
-  if (readRegister(AS5600_RAWANGLE_REG_ADDR, data, 2) == HAL_OK) {
-    rawAngle_ = (data[0] << 8) | data[1];
+  if(dmaState_ != DMA_IDLE && dmaState_ != DMA_COMPLETE) {
+    return HAL_BUSY;
   }
+  dmaState_ = DMA_READING_STATUS;
+  // Transmit i2c read command (1st time)
+  return HAL_I2C_Mem_Read_DMA(i2cHandle_,
+                              i2cAddr_,
+                              AS5600_STATUS_REG_ADDR,
+                              I2C_MEMADD_SIZE_8BIT,
+                              dmaBuffer1_,
+                              5);
+}
 
-  // ANGLE
-  if (readRegister(AS5600_ANGLE_REG_ADDR, data, 2) == HAL_OK) {
-    uint16_t inverse_angle = (data[0] << 8) | data[1];
-    angle_ = 4096 - inverse_angle;
+void MagEncoder::DMA_ReadCompleteCallback() {
+  if(dmaState_ == DMA_READING_STATUS) {
+    // dmaBuffer1_[0]: STATUS
+    // dmaBuffer1_[1-2]: RAW ANGLE (MSB, LSB)
+    // dmaBuffer1_[3-4]: ANGLE (MSB, LSB)
+    magnetDetected_ = (dmaBuffer1_[0] & (1 << 5)) != 0;
+    rawAngle_       = (dmaBuffer1_[1] << 8) | dmaBuffer1_[2];
+    angle_          = (dmaBuffer1_[3] << 8) | dmaBuffer1_[4];
+
+    // Transmit i2c read command (2nd time)
+    dmaState_ = DMA_READING_AGC_MAG;
+    if(HAL_I2C_Mem_Read_DMA(i2cHandle_,
+                            i2cAddr_,
+                            AS5600_AGC_REG_ADDR,
+                            I2C_MEMADD_SIZE_8BIT,
+                            dmaBuffer2_,
+                            3) != HAL_OK)
+    {
+      dmaState_ = DMA_ERROR;
+    }
   }
-
-  // MAGNITUDE
-  if (readRegister(AS5600_MAG_REG_ADDR, data, 2) == HAL_OK) {
-    magneticMagnitude_ = (data[0] << 8) | data[1];
+  else if(dmaState_ == DMA_READING_AGC_MAG) {
+    agc_ = dmaBuffer2_[0];
+    magneticMagnitude_ = (dmaBuffer2_[1] << 8) | dmaBuffer2_[2];
+    dmaState_ = DMA_COMPLETE;
   }
+}
 
-  // AGC
-  if (readRegister(AS5600_AGC_REG_ADDR, data, 1) == HAL_OK) {
-    agc_ = data[0];
-  }
-
-  // MAGNET STATUS
-  if (readRegister(AS5600_STATUS_REG_ADDR, data, 1) == HAL_OK) {
-    magnetDetected_ = (data[0] & (1 << 5)) != 0;
-  }
-
-  return HAL_OK;
+void MagEncoder::DMA_ErrorCallback() {
+  dmaState_ = DMA_ERROR;
 }
 
 uint16_t MagEncoder::getAngle() const {

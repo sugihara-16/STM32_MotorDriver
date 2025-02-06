@@ -180,7 +180,6 @@ void TSK_MF_StopProcessing(uint8_t motor)
 __weak void TSK_MediumFrequencyTaskM1(void)
 {
   /* USER CODE BEGIN MediumFrequencyTask M1 0 */
-
   /* USER CODE END MediumFrequencyTask M1 0 */
 
   int16_t wAux = 0;
@@ -556,6 +555,7 @@ __weak uint8_t FOC_HighFrequencyTask(uint8_t bMotorNbr)
 {
   uint16_t hFOCreturn;
   /* USER CODE BEGIN HighFrequencyTask 0 */
+  ENC_magUpdate(&ENCODER_M1);
   /* USER CODE END HighFrequencyTask 0 */
 
   (void)ENC_CalcAngle(&ENCODER_M1);   /* If not sensorless then 2nd parameter is MC_NULL */
@@ -631,15 +631,6 @@ inline uint16_t FOC_CurrControllerM1(void)
 }
 
 /* USER CODE BEGIN mc_task 0 */
-void exSensorUpdateTask(void const * argument)
-{
-  for(;;)
-    {
-      osDelay(1);
-      ENC_magUpdate(&ENCODER_M1);
-      ENC_CalcAngle(&ENCODER_M1);
-    }
-}
 /* USER CODE END mc_task 0 */
 
 /******************* (C) COPYRIGHT 2024 STMicroelectronics *****END OF FILE****/

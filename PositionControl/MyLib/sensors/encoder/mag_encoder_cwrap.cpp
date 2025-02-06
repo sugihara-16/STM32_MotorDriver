@@ -25,6 +25,12 @@ extern "C" {
     }
   }
 
+  void MagCwap_DmaCallback(MagEncoderCwrap* mag_wrapper) {
+    if (mag_wrapper && mag_wrapper->encoder) {
+      mag_wrapper->encoder->DMA_ReadCompleteCallback();
+    }
+  }
+
   uint16_t MagCwrap_GetAngle(MagEncoderCwrap* mag_wrapper) {
     uint16_t angle;
     if (mag_wrapper && mag_wrapper->encoder) {      

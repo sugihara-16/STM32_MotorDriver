@@ -12,6 +12,7 @@ extern "C" {
   MagEncoderCwrap* create_encoder();
   void MagCwrap_Init(MagEncoderCwrap* mag_wrapper, I2C_HandleTypeDef* i2cHandle);
   void MagCwrap_Update(MagEncoderCwrap* mag_wrapper);
+  void MagCwap_DmaCallback(MagEncoderCwrap* mag_wrapper);
   uint16_t MagCwrap_GetAngle(MagEncoderCwrap* mag_wrapper);
   // void destroy_encoder(MagEncoderCwrap* wrapper);
   // int get_encoder_position(MagEncoderCwrap* wrapper);

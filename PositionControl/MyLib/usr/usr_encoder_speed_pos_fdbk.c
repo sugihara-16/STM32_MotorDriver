@@ -40,14 +40,14 @@ void ENC_Init(ENCODER_Handle_t *pHandle)
       /* まず updateEncoder() を呼び出して、最新値を取得（周期的な呼び出しが前提） */
       /* updateEncoder();  /\* 【追加】 *\/ */
       /* uint16_t raw = readMagEncoder();  /\* 【変更】I2C経由で取得した値を利用 *\/ */
-      MagCwrap_Update(mag_encoder);
+      /* MagCwrap_Update(mag_encoder); */
       uint32_t raw = MagCwrap_GetAngle(mag_encoder);
       /* Convert raw 12-bit value (0..4095) to an angle in hundredths of degree */
       int32_t angle = (int32_t)((raw * FULL_SCALE_ANGLE) / ABS_ENCODER_RESOLUTION);  /* 【変更】換算処理 */
       pHandle->PreviousCapture = angle;
       pHandle->_Super.hMecAngle = angle;
       pHandle->_Super.hElAngle = angle * (int16_t)(pHandle->_Super.bElToMecRatio);
-      pHandle->_Super.wMecAngle = (((int32_t)angle) * 2)%65536;
+      pHandle->_Super.wMecAngle = (((int32_t)angle) * 2)/* %65536 */;
     }
     pHandle->SensorIsReliable = true;
     pHandle->TimerOverflowError = false; /* 【変更】タイマーオーバーフロー処理不要 */
@@ -80,7 +80,7 @@ void ENC_Clear(ENCODER_Handle_t *pHandle)
     {
       /* updateEncoder();  /\* 【追加】更新 *\/ */
       /* uint16_t raw = readMagEncoder();  /\* 【変更】絶対エンコーダから値を取得 *\/ */
-      MagCwrap_Update(mag_encoder);
+      /* MagCwrap_Update(mag_encoder); */
       uint16_t raw = MagCwrap_GetAngle(mag_encoder);
       int16_t angle = (int16_t)((raw * FULL_SCALE_ANGLE) / ABS_ENCODER_RESOLUTION);  /* 【変更】角度に換算 */
       pHandle->PreviousCapture = angle;
@@ -130,7 +130,7 @@ int16_t ENC_CalcAngle(ENCODER_Handle_t *pHandle)
       }
     /* Update the accumulated mechanical angle */
     pHandle->_Super.wMecAngle += ((int32_t)delta)*2;
-    pHandle->_Super.wMecAngle %= 65536;
+    /* pHandle->_Super.wMecAngle %= 65536; */
 
     /* Store current mechanical angle */
     pHandle->_Super.hMecAngle = mecAngle;
@@ -244,7 +244,7 @@ void ENC_SetMecAngle(ENCODER_Handle_t *pHandle, int16_t hMecAngle)
     /* Nothing to do */
   }
   else
-  {
+r  {
 #endif
     pHandle->_Super.hMecAngle = hMecAngle;
     pHandle->_Super.hElAngle = (int16_t)(hMecAngle * pHandle->_Super.bElToMecRatio);
@@ -265,10 +265,14 @@ void *ENC_IRQHandler(void *pHandleVoid)
 {
 #ifdef NULL_PTR_CHECK_ENC_SPD_POS_FDB
   if (NULL == pHandleVoid)
-  {
-    return (MC_NULL);
-  }
+    {
+      return (MC_NULL);
+    }
 #endif
   /* 【変更】絶対エンコーダではタイマーオーバーフロー割込みは発生しないため、何も処理しない */
   return (MC_NULL);
+}
+
+void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c) {
+  MagCwap_DmaCallback(mag_encoder);
 }
