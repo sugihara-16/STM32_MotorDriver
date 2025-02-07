@@ -44,7 +44,7 @@ static const ApplicationConfig_reg_t M1_ApplicationConfig_reg =
 {
   .maxMechanicalSpeed = 1740,
   .maxReadableCurrent = M1_MAX_READABLE_CURRENT,
-  .nominalCurrent     = 0.3,
+  .nominalCurrent     = 2,
   .nominalVoltage     = 25,
   .driveType          = DRIVE_TYPE_M1,
 };
@@ -57,7 +57,7 @@ static const MotorConfig_reg_t M1_MotorConfig_reg =
   .rs         = 1.93,
   .ls         = 0.000837*1.000,
   .ld         = 0.000837,
-  .maxCurrent = 0.3,
+  .maxCurrent = 2,
   .name = "TMotor_GL35_K100"
 };
 
