@@ -38,4 +38,14 @@ extern "C" {
     }
     return angle;
   }
+
+ bool MagCwrap_isDataReady(MagEncoderCwrap* mag_wrapper) {
+   bool rdy;
+    if (mag_wrapper && mag_wrapper->encoder) {      
+      rdy = mag_wrapper->encoder->isDateReady();
+    }
+    return rdy;
+  }
+
+  
 }

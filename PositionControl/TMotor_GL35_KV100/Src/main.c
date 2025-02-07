@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "usr/usr_encoder_speed_pos_fdbk.h"
+#include "usr/usr_enc_align_ctrl.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

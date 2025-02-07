@@ -4,6 +4,8 @@
 
 /*Mag Encoder Instance*/
 MagEncoderCwrap* mag_encoder = NULL;
+/*Encoder offset*/
+int16_t MecZeroOffset = 0;
 
 #define ABS_ENCODER_RESOLUTION    (4096)  /* 12-bit resolution */
 #define FULL_SCALE_ANGLE          (32767) /* 360.00° expressed in hundredths */
@@ -22,7 +24,7 @@ void ENC_Init(ENCODER_Handle_t *pHandle)
   else
   {
 #endif
-    /* 【変更】絶対エンコーダ用として、パルス数をセンサ分解能に固定 */
+    /* For an absolute encoder, we fix the pulse number to the resolution */
     pHandle->PulseNumber = ABS_ENCODER_RESOLUTION;
     pHandle->U32MAXdivPulseNumber = UINT32_MAX / ((uint32_t) pHandle->PulseNumber);
     pHandle->SpeedSamplingFreqUnit = ((uint32_t)pHandle->SpeedSamplingFreqHz * (uint32_t)SPEED_UNIT);
@@ -35,33 +37,14 @@ void ENC_Init(ENCODER_Handle_t *pHandle)
         pHandle->DeltaCapturesBuffer[index] = 0;
       }
     }
-    /* 【変更】絶対エンコーダの場合、タイマーは使用せず updateEncoder()/readMagEncoder() で初期角度を取得 */
-    {
-      /* まず updateEncoder() を呼び出して、最新値を取得（周期的な呼び出しが前提） */
-      /* updateEncoder();  /\* 【追加】 *\/ */
-      /* uint16_t raw = readMagEncoder();  /\* 【変更】I2C経由で取得した値を利用 *\/ */
-      /* MagCwrap_Update(mag_encoder); */
-      uint32_t raw = MagCwrap_GetAngle(mag_encoder);
-      /* Convert raw 12-bit value (0..4095) to an angle in hundredths of degree */
-      int32_t angle = (int32_t)((raw * FULL_SCALE_ANGLE) / ABS_ENCODER_RESOLUTION);  /* 【変更】換算処理 */
-      pHandle->PreviousCapture = angle;
-      pHandle->_Super.hMecAngle = angle;
-      pHandle->_Super.hElAngle = angle * (int16_t)(pHandle->_Super.bElToMecRatio);
-      pHandle->_Super.wMecAngle = (((int32_t)angle) * 2)/* %65536 */;
-    }
+    
     pHandle->SensorIsReliable = true;
-    pHandle->TimerOverflowError = false; /* 【変更】タイマーオーバーフロー処理不要 */
+    pHandle->TimerOverflowError = false; /* Not used for absolute encoder */
 #ifdef NULL_PTR_CHECK_ENC_SPD_POS_FDB
   }
 #endif
 }
 
-/**
-  * @brief  Clear software FIFO where the captured rotor angle variations are stored.
-  *         This function must be called before starting the motor to initialize
-  *         the speed measurement process.
-  * @param  pHandle: handler of the current instance of the encoder component
-  */
 void ENC_Clear(ENCODER_Handle_t *pHandle)
 {
 #ifdef NULL_PTR_CHECK_ENC_SPD_POS_FDB
@@ -78,11 +61,8 @@ void ENC_Clear(ENCODER_Handle_t *pHandle)
       pHandle->DeltaCapturesBuffer[index] = 0;
     }
     {
-      /* updateEncoder();  /\* 【追加】更新 *\/ */
-      /* uint16_t raw = readMagEncoder();  /\* 【変更】絶対エンコーダから値を取得 *\/ */
-      /* MagCwrap_Update(mag_encoder); */
       uint16_t raw = MagCwrap_GetAngle(mag_encoder);
-      int16_t angle = (int16_t)((raw * FULL_SCALE_ANGLE) / ABS_ENCODER_RESOLUTION);  /* 【変更】角度に換算 */
+      int16_t angle = (int16_t)((raw * FULL_SCALE_ANGLE) / ABS_ENCODER_RESOLUTION);
       pHandle->PreviousCapture = angle;
     }
     pHandle->SensorIsReliable = true;
@@ -96,12 +76,11 @@ int16_t ENC_magUpdate(ENCODER_Handle_t *pHandle)
   MagCwrap_Update(mag_encoder);
 }
 
-/**
-  * @brief  It calculates the rotor electrical and mechanical angle based on the
-  *         current absolute encoder reading.
-  * @param  pHandle: handler of the current instance of the encoder component
-  * @retval Measured electrical angle in [s16degree] format.
-  */
+bool ENC_magDmaReadCheck(ENCODER_Handle_t *pHandle)
+{
+  return MagCwrap_isDataReady(mag_encoder);
+}
+
 int16_t ENC_CalcAngle(ENCODER_Handle_t *pHandle)
 {
 #ifdef NULL_PTR_CHECK_ENC_SPD_POS_FDB
@@ -112,10 +91,9 @@ int16_t ENC_CalcAngle(ENCODER_Handle_t *pHandle)
   else
   {
 #endif
-    /* 【変更】絶対エンコーダの場合、タイマーから読み出すのではなく updateEncoder() → readMagEncoder() で取得 */
     uint16_t raw = MagCwrap_GetAngle(mag_encoder);
     /* Convert raw value to hundredths of degree: 0..4095 -> 0..35999 */
-    int16_t mecAngle = (int32_t)((raw * FULL_SCALE_ANGLE) / ABS_ENCODER_RESOLUTION);  /* 【変更】絶対値の換算 */
+    int16_t mecAngle = (int32_t)((raw * FULL_SCALE_ANGLE) / ABS_ENCODER_RESOLUTION) - MecZeroOffset;
 
     /* Compute the incremental angle (with wrap-around correction) */
     int16_t prevMecAngle = pHandle->_Super.hMecAngle;
@@ -143,16 +121,6 @@ int16_t ENC_CalcAngle(ENCODER_Handle_t *pHandle)
   return elAngle;
 }
 
-/**
-  * @brief  This method must be called with the periodicity defined by parameter
-  *         SpeedSamplingFreqUnit. The method reads the absolute encoder value,
-  *         computes and stores average mechanical speed (in the unit defined by SPEED_UNIT),
-  *         average mechanical acceleration, and instantaneous electrical speed in dpp,
-  *         updates the speed buffer and returns the reliability state of the sensor.
-  * @param  pHandle: handler of the current instance of the encoder component
-  * @param  pMecSpeedUnit pointer used to return the rotor average mechanical speed.
-  * @retval true = sensor information is reliable. false = sensor information is not reliable.
-  */
 bool ENC_CalcAvrgMecSpeedUnit(ENCODER_Handle_t *pHandle, int16_t *pMecSpeedUnit)
 {
   bool bReliability;
@@ -168,9 +136,8 @@ bool ENC_CalcAvrgMecSpeedUnit(ENCODER_Handle_t *pHandle, int16_t *pMecSpeedUnit)
     uint8_t bBufferSize = pHandle->SpeedBufferSize;
     uint8_t bBufferIndex;
 
-    /* 【変更】絶対エンコーダの場合、毎回 updateEncoder()→readMagEncoder() で現在角度を取得 */
     uint32_t raw = MagCwrap_GetAngle(mag_encoder);
-    int32_t currentAngle = (int16_t)((raw * FULL_SCALE_ANGLE) / ABS_ENCODER_RESOLUTION) * 2;  /* 【変更】角度換算 */
+    int32_t currentAngle = (int16_t)((raw * FULL_SCALE_ANGLE) / ABS_ENCODER_RESOLUTION) - MecZeroOffset;
 
     /* Compute delta from previous capture with wrap-around correction */
     int32_t delta = currentAngle - pHandle->PreviousCapture;
@@ -230,12 +197,6 @@ bool ENC_CalcAvrgMecSpeedUnit(ENCODER_Handle_t *pHandle, int16_t *pMecSpeedUnit)
   return (bReliability);
 }
 
-/**
-  * @brief  It sets the instantaneous rotor mechanical angle.
-  *         For an absolute encoder, this updates the software state.
-  * @param  pHandle: handler of the current instance of the encoder component
-  * @param  hMecAngle new value of rotor mechanical angle in [s16degree] format.
-  */
 void ENC_SetMecAngle(ENCODER_Handle_t *pHandle, int16_t hMecAngle)
 {
 #ifdef NULL_PTR_CHECK_ENC_SPD_POS_FDB
@@ -248,19 +209,17 @@ r  {
 #endif
     pHandle->_Super.hMecAngle = hMecAngle;
     pHandle->_Super.hElAngle = (int16_t)(hMecAngle * pHandle->_Super.bElToMecRatio);
-    /* 【変更】タイマー操作は不要なため、PreviousCaptureも更新して差分計算のジャンプを防止 */
     pHandle->PreviousCapture = hMecAngle;
 #ifdef NULL_PTR_CHECK_ENC_SPD_POS_FDB
   }
 #endif
 }
 
-/**
-  * @brief  Absolute encoder does not use timer overflow interrupts.
-  *         This handler is provided for compatibility and does nothing.
-  * @param  pHandleVoid: handler of the current instance of the encoder component
-  * @retval Always returns MC_NULL.
-  */
+void ENC_SetMecZeroOffset(ENCODER_Handle_t *pHandle, int16_t AngleOffset)
+{
+  MecZeroOffset = AngleOffset;
+}
+
 void *ENC_IRQHandler(void *pHandleVoid)
 {
 #ifdef NULL_PTR_CHECK_ENC_SPD_POS_FDB
@@ -269,7 +228,6 @@ void *ENC_IRQHandler(void *pHandleVoid)
       return (MC_NULL);
     }
 #endif
-  /* 【変更】絶対エンコーダではタイマーオーバーフロー割込みは発生しないため、何も処理しない */
   return (MC_NULL);
 }
 

@@ -28,6 +28,17 @@ public:
 
   I2C_HandleTypeDef* getI2CHandle() const { return i2cHandle_; }
 
+  enum DMAState
+    {
+     DMA_IDLE,
+     DMA_READING_STATUS,
+     DMA_READING_AGC_MAG,
+     DMA_COMPLETE,
+     DMA_ERROR
+    };
+
+  bool isDateReady(){ return (dmaState_ == DMA_COMPLETE);}
+
 private:
   HAL_StatusTypeDef readRegister(uint8_t regAddr, uint8_t *data, uint16_t len);
   HAL_StatusTypeDef writeRegister(uint8_t regAddr, uint8_t *data, uint16_t len);
@@ -47,13 +58,7 @@ private:
   uint8_t dmaBuffer1_[5]; //i2c resistor 0x0B～0x0F: STATUS, RAWANGLE (2byte), ANGLE (2byte)
   uint8_t dmaBuffer2_[3]; //i2c resistor AGC (1byte), MAGNETIC (2byte)
 
-  enum DMAState {
-    DMA_IDLE,
-    DMA_READING_STATUS,
-    DMA_READING_AGC_MAG,
-    DMA_COMPLETE,
-    DMA_ERROR
-  } dmaState_;
+  DMAState dmaState_;
 };
 
 #endif  // MAG_ENCODER_H

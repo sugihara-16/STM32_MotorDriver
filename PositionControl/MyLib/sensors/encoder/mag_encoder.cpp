@@ -79,6 +79,7 @@ uint8_t MagEncoder::getAGC() const {
   return agc_;
 }
 
+
 bool MagEncoder::isMagnetDetected() const {
   return magnetDetected_;
 }
