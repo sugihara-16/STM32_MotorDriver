@@ -6,6 +6,7 @@
 MagEncoderCwrap* mag_encoder = NULL;
 /*Encoder offset*/
 int16_t MecZeroOffset = 0;
+int16_t InitAbsoluteValue = 0;
 
 #define ABS_ENCODER_RESOLUTION    (4096)  /* 12-bit resolution */
 #define FULL_SCALE_ANGLE          (32767) /* 360.00° expressed in hundredths */
@@ -93,7 +94,8 @@ int16_t ENC_CalcAngle(ENCODER_Handle_t *pHandle)
 #endif
     uint16_t raw = MagCwrap_GetAngle(mag_encoder);
     /* Convert raw value to hundredths of degree: 0..4095 -> 0..35999 */
-    int16_t mecAngle = (int32_t)((raw * FULL_SCALE_ANGLE) / ABS_ENCODER_RESOLUTION) - MecZeroOffset;
+    int16_t mecAngle = (int16_t)((raw * FULL_SCALE_ANGLE) / ABS_ENCODER_RESOLUTION);
+    /* if(mecAngle < 0) mecAngle += FULL_SCALE_ANGLE; */
 
     /* Compute the incremental angle (with wrap-around correction) */
     int16_t prevMecAngle = pHandle->_Super.hMecAngle;
@@ -108,12 +110,10 @@ int16_t ENC_CalcAngle(ENCODER_Handle_t *pHandle)
       }
     /* Update the accumulated mechanical angle */
     pHandle->_Super.wMecAngle += ((int32_t)delta)*2;
-    /* pHandle->_Super.wMecAngle %= 65536; */
-
     /* Store current mechanical angle */
     pHandle->_Super.hMecAngle = mecAngle;
     /* Compute electrical angle using conversion ratio */
-    int16_t elAngle = mecAngle * (int16_t)(pHandle->_Super.bElToMecRatio);
+    int16_t elAngle = (pHandle->_Super.wMecAngle + MecZeroOffset) * (int16_t)(pHandle->_Super.bElToMecRatio);
     pHandle->_Super.hElAngle = elAngle;
 #ifdef NULL_PTR_CHECK_ENC_SPD_POS_FDB
   }
@@ -137,7 +137,7 @@ bool ENC_CalcAvrgMecSpeedUnit(ENCODER_Handle_t *pHandle, int16_t *pMecSpeedUnit)
     uint8_t bBufferIndex;
 
     uint32_t raw = MagCwrap_GetAngle(mag_encoder);
-    int32_t currentAngle = (int16_t)((raw * FULL_SCALE_ANGLE) / ABS_ENCODER_RESOLUTION) - MecZeroOffset;
+    int32_t currentAngle = (int16_t)((raw * FULL_SCALE_ANGLE) / ABS_ENCODER_RESOLUTION);
 
     /* Compute delta from previous capture with wrap-around correction */
     int32_t delta = currentAngle - pHandle->PreviousCapture;
@@ -205,7 +205,7 @@ void ENC_SetMecAngle(ENCODER_Handle_t *pHandle, int16_t hMecAngle)
     /* Nothing to do */
   }
   else
-r  {
+  {
 #endif
     pHandle->_Super.hMecAngle = hMecAngle;
     pHandle->_Super.hElAngle = (int16_t)(hMecAngle * pHandle->_Super.bElToMecRatio);
@@ -218,6 +218,10 @@ r  {
 void ENC_SetMecZeroOffset(ENCODER_Handle_t *pHandle, int16_t AngleOffset)
 {
   MecZeroOffset = AngleOffset;
+}
+void ENC_SetInitAbsPos(ENCODER_Handle_t *pHandle, int16_t initPos)
+{
+  InitAbsoluteValue = initPos;
 }
 
 void *ENC_IRQHandler(void *pHandleVoid)

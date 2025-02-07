@@ -17,5 +17,6 @@ void ENC_SetMecAngle(ENCODER_Handle_t *pHandle, int16_t hMecAngle);
 /*Additional functions for absolute encoder*/
 int16_t ENC_magUpdate(ENCODER_Handle_t *pHandle);
 void ENC_SetMecZeroOffset(ENCODER_Handle_t *pHandle, int16_t AngleOffset);
+void ENC_SetInitAbsPos(ENCODER_Handle_t *pHandle, int16_t initPos);
 
 #endif
