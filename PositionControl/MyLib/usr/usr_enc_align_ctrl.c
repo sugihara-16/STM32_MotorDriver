@@ -18,17 +18,12 @@ bool EAC_Exec(EncAlign_Handle_t *pHandle)
       {
         /*get aligned mechanical angle*/
         int16_t aligned_mecAngle = pHandle->hElAngle / ((int16_t)pHandle->bElToMecRatio);
-
-        /*get current absolute angle*/
+        /*get and store current absolute angle*/
         ENC_magUpdate(pHandle->pENC);
         while(ENC_magDmaReadCheck(pHandle->pENC));
         ENC_CalcAngle(pHandle->pENC);
-
-        /* pHandle->pENC->_Super.wMecAngle = pHandle->pENC->_Super.hMecAngle; */
-        int16_t aligned_offset = aligned_mecAngle;
-        ENC_SetMecZeroOffset(pHandle->pENC, aligned_offset);
+        ENC_SetMecZeroOffset(pHandle->pENC, aligned_mecAngle);//Very important! This process ensure the proper conversion from absolute angle to electrical angle.
         ENC_SetInitAbsPos(pHandle->pENC, pHandle->pENC->_Super.wMecAngle);
-        /* ENC_SetMecAngle(pHandle->pENC, 0); */
         pHandle->EncAligned = true;
         retVal = true;
       }
