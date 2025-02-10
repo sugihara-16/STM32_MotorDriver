@@ -39,7 +39,7 @@
 		<link>
 			<name>Application/MyLib</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/MyLib</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/MyLib</locationURI>
 		</link>
 		<link>
 			<name>Application/User/app_freertos.c</name>
